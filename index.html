@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=5.0">
+  <title>Stock Capture • Photo + Details</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    }
+    body {
+      background: #f4f6fb;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+    .app {
+      max-width: 700px;
+      width: 100%;
+      background: white;
+      border-radius: 32px;
+      box-shadow: 0 20px 35px rgba(0,0,0,0.05);
+      padding: 20px 18px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    h1 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: #0b2b4e;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: -0.3px;
+      border-bottom: 2px solid #e9eff6;
+      padding-bottom: 12px;
+    }
+    h1 span {
+      background: #1e4b6e;
+      color: white;
+      font-size: 1rem;
+      padding: 4px 12px;
+      border-radius: 30px;
+      margin-left: 8px;
+    }
+    .photo-section {
+      background: #f8fafd;
+      border-radius: 24px;
+      padding: 16px;
+      border: 1px dashed #b6c8e0;
+    }
+    .photo-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 14px;
+      align-items: center;
+    }
+    .photo-thumb {
+      width: 80px;
+      height: 80px;
+      border-radius: 18px;
+      background: #eef2f7;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+      border: 2px solid white;
+      position: relative;
+      transition: 0.2s;
+    }
+    .photo-thumb:hover {
+      transform: scale(1.02);
+      border-color: #356c93;
+    }
+    .photo-thumb .delete-photo {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: white;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #b91c1c;
+      border: 1px solid #f1cfcf;
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .capture-btn {
+      background: white;
+      border: 2px solid #2c5979;
+      color: #1e3b4f;
+      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: 0.2s;
+      background: #ffffff;
+      width: fit-content;
+    }
+    .capture-btn:hover {
+      background: #e3effa;
+      border-color: #0f2f44;
+    }
+    .capture-btn:disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    .form-fields {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin: 8px 0 6px;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    label {
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #3b4b62;
+    }
+    input, select {
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1.5px solid #dce3ec;
+      background: #fbfdff;
+      font-size: 1rem;
+      outline: none;
+      transition: 0.2s;
+    }
+    input:focus, select:focus {
+      border-color: #2f6690;
+      box-shadow: 0 0 0 3px rgba(47,102,144,0.15);
+    }
+    .action-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .btn {
+      padding: 14px 22px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: none;
+      background: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: 0.2s;
+      border: 1.5px solid transparent;
+    }
+    .btn-primary {
+      background: #1b3c55;
+      color: white;
+      border-color: #1b3c55;
+      flex: 1;
+    }
+    .btn-primary:hover {
+      background: #123046;
+    }
+    .btn-outline {
+      border: 1.5px solid #bbcfe0;
+      color: #1f3b4f;
+    }
+    .btn-outline:hover {
+      background: #eef4fa;
+    }
+    .btn-warning {
+      background: #fff7e5;
+      border-color: #f3c969;
+      color: #6b4c1c;
+    }
+    .stock-list {
+      background: #f9fcff;
+      border-radius: 22px;
+      padding: 12px;
+      max-height: 380px;
+      overflow-y: auto;
+      border: 1px solid #e2eaf3;
+    }
+    .list-item {
+      background: white;
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.02);
+      border: 1px solid #ecf0f5;
+      transition: 0.15s;
+    }
+    .list-item:hover {
+      border-color: #b7cee8;
+    }
+    .item-thumb {
+      width: 60px;
+      height: 60px;
+      border-radius: 14px;
+      background: #eef3f9;
+      background-size: cover;
+      background-position: center;
+      flex-shrink: 0;
+    }
+    .item-info {
+      flex: 1;
+    }
+    .item-title {
+      font-weight: 700;
+      color: #0b2c44;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .item-meta {
+      font-size: 0.8rem;
+      color: #516b84;
+      display: flex;
+      gap: 12px;
+      margin-top: 5px;
+    }
+    .badge {
+      background: #e0eaf8;
+      border-radius: 30px;
+      padding: 2px 12px;
+      font-weight: 600;
+      font-size: 0.7rem;
+    }
+    .edit-item-btn {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 12px;
+      color: #2e587a;
+    }
+    .submit-batch {
+      margin-top: 6px;
+      background: #1a4b3b;
+      color: white;
+      border: none;
+      width: 100%;
+    }
+    .submit-batch:hover {
+      background: #0e3629;
+    }
+    .camera-message {
+      font-size: 0.8rem;
+      color: #5a6f86;
+      margin-left: 6px;
+    }
+    hr {
+      border: 0.5px solid #dce4f0;
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <h1>
+    📸 Stock Capture
+    <span>v1.0</span>
+  </h1>
+
+  <!-- Current item editing area -->
+  <div class="photo-section">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <label style="margin-bottom:0;">📷 Photos (max 5)</label>
+      <span class="camera-message" id="photoCountLabel">0 / 5</span>
+    </div>
+    <div class="photo-grid" id="photoPreviewContainer"></div>
+    <input type="file" id="cameraInput" accept="image/*" capture="environment" multiple style="display:none;">
+    <button class="capture-btn" id="openCameraBtn">
+      <span>📷</span> Add Photo(s)
+    </button>
+    <small style="display: block; margin-top: 6px; color: #526e84;">Use camera or gallery • tap photo to remove</small>
+  </div>
+
+  <div class="form-fields">
+    <div class="input-group">
+      <label>📌 Item Name</label>
+      <input type="text" id="itemName" placeholder="e.g. Steel Rod 12mm" autocomplete="off">
+    </div>
+    <div class="input-group">
+      <label>📦 Group / Category</label>
+      <select id="itemGroup">
+        <option value="" disabled selected>– Select group –</option>
+        <option value="Raw Material">Raw Material</option>
+        <option value="Hardware">Hardware</option>
+        <option value="Packaging">Packaging</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Finished Goods">Finished Goods</option>
+        <option value="Consumables">Consumables</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="input-group">
+      <label>🔢 Quantity Received</label>
+      <input type="number" id="itemQuantity" placeholder="0" min="0" step="any">
+    </div>
+  </div>
+
+  <div class="action-row">
+    <button class="btn btn-outline" id="clearFormBtn">🗑 Clear</button>
+    <button class="btn btn-primary" id="saveItemBtn">💾 Save Item</button>
+  </div>
+
+  <!-- Current editing indicator -->
+  <div style="font-size:0.8rem; color:#3c5a77; background:#ecf3fa; padding:6px 14px; border-radius:20px; display:flex; align-items:center; gap:8px;" id="editIndicator">
+    <span>✏️ New item</span>
+  </div>
+
+  <!-- Stored items list (before batch submit) -->
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <h3 style="font-weight: 600; color:#1e3a4d;">📋 Pending stock entries</h3>
+    <span class="badge" id="itemCount">0 items</span>
+  </div>
+  <div class="stock-list" id="stockListContainer">
+    <div style="color:#8a9aa8; padding:20px; text-align:center;">No items added yet.</div>
+  </div>
+
+  <button class="btn submit-batch" id="submitBatchBtn">
+    ✅ SUBMIT BATCH (Finalize Stock)
+  </button>
+  <div style="font-size:0.7rem; color:#6b7d91; text-align:center; margin-top:-8px;">
+    After submit, entries are saved locally. You can deploy this page.
+  </div>
+</div>
+
+<script>
+  (function() {
+    // ---------- STATE ----------
+    const MAX_PHOTOS = 5;
+
+    // Current item being built (not yet saved)
+    let currentPhotos = [];          // array of dataURL strings
+    let editingItemId = null;       // if we are editing an existing item from list
+
+    // Stock items array (saved until batch submit)
+    let stockItems = [];
+
+    // DOM elements
+    const photoContainer = document.getElementById('photoPreviewContainer');
+    const photoCountLabel = document.getElementById('photoCountLabel');
+    const openCameraBtn = document.getElementById('openCameraBtn');
+    const cameraInput = document.getElementById('cameraInput');
+    const itemNameInput = document.getElementById('itemName');
+    const itemGroupSelect = document.getElementById('itemGroup');
+    const itemQuantityInput = document.getElementById('itemQuantity');
+    const saveItemBtn = document.getElementById('saveItemBtn');
+    const clearFormBtn = document.getElementById('clearFormBtn');
+    const stockListContainer = document.getElementById('stockListContainer');
+    const itemCountSpan = document.getElementById('itemCount');
+    const submitBatchBtn = document.getElementById('submitBatchBtn');
+    const editIndicator = document.getElementById('editIndicator');
+
+    // ---------- UTILS ----------
+    function updatePhotoUI() {
+      photoContainer.innerHTML = '';
+      currentPhotos.forEach((photoData, index) => {
+        const thumb = document.createElement('div');
+        thumb.className = 'photo-thumb';
+        thumb.style.backgroundImage = `url(${photoData})`;
+        // delete button
+        const delBtn = document.createElement('span');
+        delBtn.className = 'delete-photo';
+        delBtn.innerHTML = '×';
+        delBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          removePhotoAtIndex(index);
+        });
+        thumb.appendChild(delBtn);
+        photoContainer.appendChild(thumb);
+      });
+      photoCountLabel.textContent = `${currentPhotos.length} / ${MAX_PHOTOS}`;
+    }
+
+    function removePhotoAtIndex(index) {
+      currentPhotos.splice(index, 1);
+      updatePhotoUI();
+    }
+
+    function addPhotosFromFiles(files) {
+      if (!files || files.length === 0) return;
+      const remainingSlots = MAX_PHOTOS - currentPhotos.length;
+      if (remainingSlots <= 0) {
+        alert(`Maximum ${MAX_PHOTOS} photos allowed. Remove some first.`);
+        return;
+      }
+      const filesToProcess = Array.from(files).slice(0, remainingSlots);
+      let loaded = 0;
+      filesToProcess.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          currentPhotos.push(e.target.result);
+          updatePhotoUI();
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function resetCurrentItemForm() {
+      currentPhotos = [];
+      editingItemId = null;
+      itemNameInput.value = '';
+      itemGroupSelect.value = '';
+      itemQuantityInput.value = '';
+      updatePhotoUI();
+      editIndicator.innerHTML = '<span>✏️ New item</span>';
+    }
+
+    function loadItemIntoForm(item) {
+      // item: { id, name, group, quantity, photos }
+      currentPhotos = [...item.photos];
+      editingItemId = item.id;
+      itemNameInput.value = item.name || '';
+      itemGroupSelect.value = item.group || '';
+      itemQuantityInput.value = item.quantity !== undefined ? item.quantity : '';
+      updatePhotoUI();
+      editIndicator.innerHTML = `<span>✏️ Editing: <strong>${item.name || '(unnamed)'}</strong></span>`;
+    }
+
+    function getFormData() {
+      return {
+        name: itemNameInput.value.trim(),
+        group: itemGroupSelect.value,
+        quantity: itemQuantityInput.value.trim() === '' ? null : parseFloat(itemQuantityInput.value),
+      };
+    }
+
+    function validateForm(data) {
+      if (!data.name) return 'Item name is required.';
+      if (!data.group) return 'Please select a group.';
+      if (data.quantity === null || isNaN(data.quantity) || data.quantity < 0) return 'Valid quantity is required.';
+      if (currentPhotos.length === 0) return 'Add at least one photo.';
+      return null;
+    }
+
+    function saveCurrentAsItem() {
+      const formData = getFormData();
+      const error = validateForm(formData);
+      if (error) {
+        alert(error);
+        return false;
+      }
+
+      if (editingItemId !== null) {
+        // Update existing item in stockItems
+        const index = stockItems.findIndex(item => item.id === editingItemId);
+        if (index !== -1) {
+          stockItems[index] = {
+            ...stockItems[index],
+            name: formData.name,
+            group: formData.group,
+            quantity: formData.quantity,
+            photos: [...currentPhotos],
+          };
+        } else {
+          // fallback: if id not found, treat as new
+          editingItemId = null;
+        }
+      }
+
+      if (editingItemId === null) {
+        // New item
+        const newItem = {
+          id: Date.now() + Math.random().toString(36),
+          name: formData.name,
+          group: formData.group,
+          quantity: formData.quantity,
+          photos: [...currentPhotos],
+        };
+        stockItems.push(newItem);
+      }
+
+      // Reset form for next entry
+      resetCurrentItemForm();
+      renderStockList();
+      return true;
+    }
+
+    function editItemById(id) {
+      const item = stockItems.find(it => it.id === id);
+      if (!item) return;
+      // load into form
+      loadItemIntoForm(item);
+      // scroll to top for visibility
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function deleteItemFromList(id) {
+      if (!confirm('Remove this item from the batch?')) return;
+      stockItems = stockItems.filter(item => item.id !== id);
+      // If we were editing that item, reset form
+      if (editingItemId === id) {
+        resetCurrentItemForm();
+      }
+      renderStockList();
+    }
+
+    function renderStockList() {
+      stockListContainer.innerHTML = '';
+      itemCountSpan.textContent = `${stockItems.length} item${stockItems.length !== 1 ? 's' : ''}`;
+
+      if (stockItems.length === 0) {
+        stockListContainer.innerHTML = '<div style="color:#8a9aa8; padding:20px; text-align:center;">No items added yet.</div>';
+        return;
+      }
+
+      stockItems.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'list-item';
+
+        // thumbnail (first photo)
+        const thumbDiv = document.createElement('div');
+        thumbDiv.className = 'item-thumb';
+        if (item.photos && item.photos.length > 0) {
+          thumbDiv.style.backgroundImage = `url(${item.photos[0]})`;
+        } else {
+          thumbDiv.style.background = '#d9e2ef';
+        }
+
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'item-info';
+
+        const titleDiv = document.createElement('div');
+        titleDiv.className = 'item-title';
+        titleDiv.innerHTML = `${escapeHtml(item.name)} <span class="badge">${item.photos?.length || 0} 📷</span>`;
+
+        const metaDiv = document.createElement('div');
+        metaDiv.className = 'item-meta';
+        metaDiv.innerHTML = `<span>📦 ${escapeHtml(item.group)}</span> <span>🔢 Qty: ${item.quantity}</span>`;
+
+        infoDiv.appendChild(titleDiv);
+        infoDiv.appendChild(metaDiv);
+
+        // edit button
+        const editBtn = document.createElement('button');
+        editBtn.className = 'edit-item-btn';
+        editBtn.innerHTML = '✏️';
+        editBtn.title = 'Edit item';
+        editBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          editItemById(item.id);
+        });
+
+        // delete button
+        const delBtn = document.createElement('button');
+        delBtn.className = 'edit-item-btn';
+        delBtn.innerHTML = '🗑️';
+        delBtn.title = 'Delete item';
+        delBtn.style.marginLeft = '4px';
+        delBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          deleteItemFromList(item.id);
+        });
+
+        const actionWrapper = document.createElement('div');
+        actionWrapper.style.display = 'flex';
+        actionWrapper.appendChild(editBtn);
+        actionWrapper.appendChild(delBtn);
+
+        card.appendChild(thumbDiv);
+        card.appendChild(infoDiv);
+        card.appendChild(actionWrapper);
+        stockListContainer.appendChild(card);
+      });
+    }
+
+    function escapeHtml(text) {
+      return String(text).replace(/[&<>"]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        if (m === '"') return '&quot;';
+        return m;
+      });
+    }
+
+    function submitBatch() {
+      if (stockItems.length === 0) {
+        alert('No stock items to submit. Add at least one item.');
+        return;
+      }
+      // Confirmation
+      if (!confirm(`Submit batch with ${stockItems.length} item(s)? This will be saved locally.`)) return;
+
+      // Save to localStorage as a submitted batch record (simulate sending)
+      const batchRecord = {
+        batchId: 'BATCH-' + Date.now(),
+        timestamp: new Date().toISOString(),
+        items: stockItems,
+      };
+
+      // Get existing batches from localStorage
+      let batches = [];
+      try {
+        const stored = localStorage.getItem('stockBatches');
+        if (stored) batches = JSON.parse(stored);
+      } catch (e) {}
+      batches.push(batchRecord);
+      localStorage.setItem('stockBatches', JSON.stringify(batches));
+
+      // Clear current list
+      stockItems = [];
+      resetCurrentItemForm();
+      renderStockList();
+      alert(`✅ Batch submitted! (${batchRecord.batchId}) Stored in browser.`);
+    }
+
+    // Load any previously unsaved? We don't auto-save draft to avoid confusion.
+    // But on page load we could show saved batches count.
+    function loadBatchHistoryInfo() {
+      // optional
+    }
+
+    // Event Listeners
+    openCameraBtn.addEventListener('click', () => {
+      if (currentPhotos.length >= MAX_PHOTOS) {
+        alert('Maximum 5 photos reached. Remove some to add new.');
+        return;
+      }
+      cameraInput.click();
+    });
+
+    cameraInput.addEventListener('change', (e) => {
+      addPhotosFromFiles(e.target.files);
+      cameraInput.value = ''; // allow re-select same file
+    });
+
+    saveItemBtn.addEventListener('click', () => {
+      saveCurrentAsItem();
+    });
+
+    clearFormBtn.addEventListener('click', () => {
+      if (currentPhotos.length > 0 || itemNameInput.value || itemGroupSelect.value || itemQuantityInput.value) {
+        if (confirm('Clear current form? Unsaved changes will be lost.')) {
+          resetCurrentItemForm();
+        }
+      } else {
+        resetCurrentItemForm();
+      }
+    });
+
+    submitBatchBtn.addEventListener('click', submitBatch);
+
+    // Initial render
+    renderStockList();
+    updatePhotoUI();
+    // Ensure edit indicator
+    editIndicator.innerHTML = '<span>✏️ New item</span>';
+
+    // Handle page unload warning if there are unsaved items? (nice to have)
+    window.addEventListener('beforeunload', (e) => {
+      if (stockItems.length > 0) {
+        e.preventDefault();
+        e.returnValue = 'You have unsaved stock items. Submit batch before leaving.';
+        return e.returnValue;
+      }
+    });
+
+  })();
+</script>
+</body>
+</html>
