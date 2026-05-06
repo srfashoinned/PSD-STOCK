@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=5.0">
-  <title>Stock Capture • Photo + Details</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#1b3c55">
+  <title>Stock Capture Pro • Photo + Details + WhatsApp</title>
   <style>
     * {
       margin: 0;
@@ -12,216 +15,280 @@
       font-family: system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
     }
     body {
-      background: #f4f6fb;
+      background: linear-gradient(135deg, #f0f4fa 0%, #e8eef6 100%);
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 16px;
+      padding: 12px;
     }
     .app {
-      max-width: 700px;
+      max-width: 720px;
       width: 100%;
       background: white;
-      border-radius: 32px;
-      box-shadow: 0 20px 35px rgba(0,0,0,0.05);
-      padding: 20px 18px 28px;
+      border-radius: 28px;
+      box-shadow: 0 25px 50px rgba(0,20,40,0.08);
+      padding: 20px 16px 24px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 18px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #eef3fa;
+      padding-bottom: 14px;
     }
     h1 {
-      font-size: 1.9rem;
+      font-size: 1.7rem;
       font-weight: 700;
       color: #0b2b4e;
       display: flex;
       align-items: center;
       gap: 8px;
-      letter-spacing: -0.3px;
-      border-bottom: 2px solid #e9eff6;
-      padding-bottom: 12px;
     }
-    h1 span {
+    .header-badge {
       background: #1e4b6e;
       color: white;
-      font-size: 1rem;
-      padding: 4px 12px;
-      border-radius: 30px;
-      margin-left: 8px;
+      font-size: 0.75rem;
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+    .stats-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .stat-card {
+      background: #f7faff;
+      border-radius: 18px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #1e405b;
+      border: 1px solid #e2ebf7;
     }
     .photo-section {
-      background: #f8fafd;
-      border-radius: 24px;
-      padding: 16px;
-      border: 1px dashed #b6c8e0;
+      background: #f9fbfd;
+      border-radius: 20px;
+      padding: 14px;
+      border: 1.5px dashed #c5d5e8;
     }
     .photo-grid {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 14px;
+      gap: 10px;
+      margin-bottom: 12px;
       align-items: center;
+      min-height: 70px;
     }
     .photo-thumb {
       width: 80px;
       height: 80px;
-      border-radius: 18px;
+      border-radius: 16px;
       background: #eef2f7;
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
       border: 2px solid white;
       position: relative;
       transition: 0.2s;
+      cursor: pointer;
     }
     .photo-thumb:hover {
-      transform: scale(1.02);
+      transform: scale(1.03);
       border-color: #356c93;
     }
-    .photo-thumb .delete-photo {
+    .delete-photo {
       position: absolute;
-      top: -6px;
-      right: -6px;
+      top: -7px;
+      right: -7px;
       background: white;
       border-radius: 50%;
-      width: 24px;
-      height: 24px;
+      width: 26px;
+      height: 26px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: bold;
-      color: #b91c1c;
-      border: 1px solid #f1cfcf;
+      color: #c92a2a;
+      border: 1.5px solid #f1cfcf;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 18px;
       line-height: 1;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      z-index: 2;
     }
-    .capture-btn {
+    .add-photo-btn {
       background: white;
       border: 2px solid #2c5979;
       color: #1e3b4f;
       font-weight: 600;
-      padding: 10px 18px;
-      border-radius: 40px;
+      padding: 10px 16px;
+      border-radius: 30px;
       display: flex;
       align-items: center;
       gap: 6px;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       cursor: pointer;
       transition: 0.2s;
-      background: #ffffff;
       width: fit-content;
     }
-    .capture-btn:hover {
-      background: #e3effa;
-      border-color: #0f2f44;
+    .add-photo-btn:hover {
+      background: #e5eff9;
     }
-    .capture-btn:disabled {
+    .add-photo-btn:disabled {
       opacity: 0.5;
       pointer-events: none;
     }
-    .form-fields {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      margin: 8px 0 6px;
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
     }
     .input-group {
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 4px;
+    }
+    .input-group.full {
+      grid-column: 1 / -1;
     }
     label {
-      font-weight: 600;
-      font-size: 0.8rem;
+      font-weight: 700;
+      font-size: 0.75rem;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #3b4b62;
+      letter-spacing: 0.6px;
+      color: #3a4d64;
     }
-    input, select {
-      padding: 14px 16px;
-      border-radius: 18px;
-      border: 1.5px solid #dce3ec;
-      background: #fbfdff;
-      font-size: 1rem;
+    input, select, textarea {
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1.5px solid #dde4f1;
+      background: #fdfeff;
+      font-size: 0.95rem;
       outline: none;
       transition: 0.2s;
+      font-family: inherit;
     }
-    input:focus, select:focus {
+    input:focus, select:focus, textarea:focus {
       border-color: #2f6690;
-      box-shadow: 0 0 0 3px rgba(47,102,144,0.15);
+      box-shadow: 0 0 0 3px rgba(47,102,144,0.12);
     }
-    .action-row {
+    textarea {
+      resize: vertical;
+      min-height: 50px;
+    }
+    .btn-row {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
-      margin-top: 8px;
     }
     .btn {
-      padding: 14px 22px;
-      border-radius: 40px;
+      padding: 13px 20px;
+      border-radius: 30px;
       font-weight: 600;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       border: none;
-      background: white;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      transition: 0.2s;
+      gap: 7px;
+      transition: all 0.2s;
       border: 1.5px solid transparent;
+      white-space: nowrap;
     }
     .btn-primary {
       background: #1b3c55;
       color: white;
-      border-color: #1b3c55;
       flex: 1;
     }
     .btn-primary:hover {
       background: #123046;
+      transform: translateY(-1px);
     }
     .btn-outline {
-      border: 1.5px solid #bbcfe0;
+      border: 1.5px solid #c5d4e8;
       color: #1f3b4f;
+      background: white;
     }
     .btn-outline:hover {
-      background: #eef4fa;
+      background: #f0f5fc;
     }
-    .btn-warning {
-      background: #fff7e5;
-      border-color: #f3c969;
-      color: #6b4c1c;
+    .btn-whatsapp {
+      background: #25D366;
+      color: white;
+      font-weight: 700;
+      flex: 1;
+      border-color: #25D366;
+    }
+    .btn-whatsapp:hover {
+      background: #1fb855;
+    }
+    .btn-danger {
+      background: #fff5f5;
+      border-color: #f4c2c2;
+      color: #a52323;
+    }
+    .btn-danger:hover {
+      background: #ffe6e6;
+    }
+    .btn-success {
+      background: #1a4b3b;
+      color: white;
+      border-color: #1a4b3b;
+      width: 100%;
+      font-size: 1rem;
+      padding: 16px;
+    }
+    .btn-success:hover {
+      background: #0e3629;
+    }
+    .edit-indicator {
+      font-size: 0.8rem;
+      background: #edf3fc;
+      padding: 8px 16px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #2e4b6b;
+      font-weight: 500;
     }
     .stock-list {
       background: #f9fcff;
-      border-radius: 22px;
-      padding: 12px;
-      max-height: 380px;
+      border-radius: 20px;
+      padding: 10px;
+      max-height: 400px;
       overflow-y: auto;
-      border: 1px solid #e2eaf3;
+      border: 1px solid #e4ecf7;
     }
     .list-item {
       background: white;
-      border-radius: 18px;
-      padding: 14px;
-      margin-bottom: 10px;
+      border-radius: 16px;
+      padding: 12px;
+      margin-bottom: 8px;
       display: flex;
       align-items: center;
-      gap: 14px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.02);
-      border: 1px solid #ecf0f5;
+      gap: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+      border: 1px solid #ecf1f8;
       transition: 0.15s;
     }
     .list-item:hover {
-      border-color: #b7cee8;
+      border-color: #bdd4f0;
     }
     .item-thumb {
       width: 60px;
       height: 60px;
-      border-radius: 14px;
+      border-radius: 12px;
       background: #eef3f9;
       background-size: cover;
       background-position: center;
@@ -229,90 +296,124 @@
     }
     .item-info {
       flex: 1;
+      min-width: 0;
     }
-    .item-title {
+    .item-name {
       font-weight: 700;
       color: #0b2c44;
-      font-size: 1.1rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
+      font-size: 1rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .item-meta {
-      font-size: 0.8rem;
-      color: #516b84;
+      font-size: 0.75rem;
+      color: #5b7896;
       display: flex;
-      gap: 12px;
-      margin-top: 5px;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 3px;
     }
     .badge {
-      background: #e0eaf8;
-      border-radius: 30px;
-      padding: 2px 12px;
+      background: #e4edf9;
+      border-radius: 20px;
+      padding: 2px 10px;
       font-weight: 600;
       font-size: 0.7rem;
+      color: #2c5277;
     }
-    .edit-item-btn {
+    .item-actions {
+      display: flex;
+      gap: 4px;
+    }
+    .icon-btn {
       background: none;
       border: none;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       cursor: pointer;
-      padding: 6px;
-      border-radius: 12px;
-      color: #2e587a;
+      padding: 6px 8px;
+      border-radius: 10px;
+      transition: 0.15s;
     }
-    .submit-batch {
-      margin-top: 6px;
-      background: #1a4b3b;
+    .icon-btn:hover {
+      background: #f0f5ff;
+    }
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1b3c55;
       color: white;
-      border: none;
-      width: 100%;
+      padding: 12px 28px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      z-index: 999;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     }
-    .submit-batch:hover {
-      background: #0e3629;
+    .toast.show {
+      opacity: 1;
     }
-    .camera-message {
-      font-size: 0.8rem;
-      color: #5a6f86;
-      margin-left: 6px;
+    .empty-state {
+      text-align: center;
+      padding: 30px;
+      color: #8fa4bc;
     }
     hr {
-      border: 0.5px solid #dce4f0;
-      margin: 8px 0;
+      border: 0.5px solid #e6edf7;
+      margin: 4px 0;
+    }
+    @media (max-width: 500px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .btn-row {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
 <div class="app">
-  <h1>
-    📸 Stock Capture
-    <span>v1.0</span>
-  </h1>
-
-  <!-- Current item editing area -->
-  <div class="photo-section">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <label style="margin-bottom:0;">📷 Photos (max 5)</label>
-      <span class="camera-message" id="photoCountLabel">0 / 5</span>
-    </div>
-    <div class="photo-grid" id="photoPreviewContainer"></div>
-    <input type="file" id="cameraInput" accept="image/*" capture="environment" multiple style="display:none;">
-    <button class="capture-btn" id="openCameraBtn">
-      <span>📷</span> Add Photo(s)
-    </button>
-    <small style="display: block; margin-top: 6px; color: #526e84;">Use camera or gallery • tap photo to remove</small>
+  <div class="header">
+    <h1>📸 Stock Capture Pro</h1>
+    <span class="header-badge">v2.0</span>
   </div>
 
-  <div class="form-fields">
-    <div class="input-group">
-      <label>📌 Item Name</label>
+  <div class="stats-row">
+    <div class="stat-card">📋 <span id="pendingCount">0 pending</span></div>
+    <div class="stat-card">✅ <span id="submittedCount">0 submitted</span></div>
+  </div>
+
+  <!-- Photo Section -->
+  <div class="photo-section">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+      <strong style="font-size:0.85rem; color:#2b486b;">📷 Photos</strong>
+      <span style="font-size:0.8rem; color:#5f7d9c;" id="photoCountLabel">0 / 5</span>
+    </div>
+    <div class="photo-grid" id="photoPreviewContainer">
+      <div style="color:#b0c4db; font-size:0.85rem;">No photos yet</div>
+    </div>
+    <input type="file" id="cameraInput" accept="image/*" capture="environment" multiple style="display:none;">
+    <button class="add-photo-btn" id="openCameraBtn">
+      📷 Take / Add Photos
+    </button>
+  </div>
+
+  <!-- Form -->
+  <div class="form-grid">
+    <div class="input-group full">
+      <label>📌 Item Name *</label>
       <input type="text" id="itemName" placeholder="e.g. Steel Rod 12mm" autocomplete="off">
     </div>
     <div class="input-group">
-      <label>📦 Group / Category</label>
+      <label>📦 Group *</label>
       <select id="itemGroup">
-        <option value="" disabled selected>– Select group –</option>
+        <option value="" disabled selected>Select group</option>
         <option value="Raw Material">Raw Material</option>
         <option value="Hardware">Hardware</option>
         <option value="Packaging">Packaging</option>
@@ -323,51 +424,59 @@
       </select>
     </div>
     <div class="input-group">
-      <label>🔢 Quantity Received</label>
+      <label>🔢 Quantity *</label>
       <input type="number" id="itemQuantity" placeholder="0" min="0" step="any">
+    </div>
+    <div class="input-group full">
+      <label>📝 Notes (optional)</label>
+      <textarea id="itemNotes" placeholder="Batch number, supplier, location..." rows="2"></textarea>
     </div>
   </div>
 
-  <div class="action-row">
+  <div class="btn-row">
     <button class="btn btn-outline" id="clearFormBtn">🗑 Clear</button>
     <button class="btn btn-primary" id="saveItemBtn">💾 Save Item</button>
   </div>
 
-  <!-- Current editing indicator -->
-  <div style="font-size:0.8rem; color:#3c5a77; background:#ecf3fa; padding:6px 14px; border-radius:20px; display:flex; align-items:center; gap:8px;" id="editIndicator">
-    <span>✏️ New item</span>
+  <div class="edit-indicator" id="editIndicator">
+    ✏️ <span>New item mode</span>
   </div>
 
-  <!-- Stored items list (before batch submit) -->
+  <!-- Stock List -->
   <div style="display: flex; justify-content: space-between; align-items: center;">
-    <h3 style="font-weight: 600; color:#1e3a4d;">📋 Pending stock entries</h3>
-    <span class="badge" id="itemCount">0 items</span>
+    <h3 style="font-weight: 700; color:#1e3a4d; font-size:1.1rem;">📋 Pending Entries</h3>
+    <div style="display:flex; gap:6px;">
+      <button class="btn btn-outline" id="shareSingleBtn" style="padding:8px 14px; font-size:0.8rem;" title="Share list as text">📤 Share Text</button>
+      <button class="btn btn-whatsapp" id="shareWhatsAppBtn" style="padding:8px 14px; font-size:0.8rem;">💬 WhatsApp</button>
+    </div>
   </div>
   <div class="stock-list" id="stockListContainer">
-    <div style="color:#8a9aa8; padding:20px; text-align:center;">No items added yet.</div>
+    <div class="empty-state">📭 No items added yet</div>
   </div>
 
-  <button class="btn submit-batch" id="submitBatchBtn">
-    ✅ SUBMIT BATCH (Finalize Stock)
+  <button class="btn btn-success" id="submitBatchBtn">
+    ✅ SUBMIT BATCH & Save
   </button>
-  <div style="font-size:0.7rem; color:#6b7d91; text-align:center; margin-top:-8px;">
-    After submit, entries are saved locally. You can deploy this page.
-  </div>
 </div>
+
+<div class="toast" id="toast"></div>
 
 <script>
   (function() {
     // ---------- STATE ----------
     const MAX_PHOTOS = 5;
-
-    // Current item being built (not yet saved)
-    let currentPhotos = [];          // array of dataURL strings
-    let editingItemId = null;       // if we are editing an existing item from list
-
-    // Stock items array (saved until batch submit)
+    let currentPhotos = [];
+    let editingItemId = null;
     let stockItems = [];
+    let submittedCount = 0;
 
-    // DOM elements
+    // Load submitted count from localStorage
+    try {
+      const batches = JSON.parse(localStorage.getItem('stockBatches') || '[]');
+      submittedCount = batches.reduce((sum, b) => sum + (b.items?.length || 0), 0);
+    } catch(e) {}
+
+    // DOM
     const photoContainer = document.getElementById('photoPreviewContainer');
     const photoCountLabel = document.getElementById('photoCountLabel');
     const openCameraBtn = document.getElementById('openCameraBtn');
@@ -375,31 +484,54 @@
     const itemNameInput = document.getElementById('itemName');
     const itemGroupSelect = document.getElementById('itemGroup');
     const itemQuantityInput = document.getElementById('itemQuantity');
+    const itemNotesInput = document.getElementById('itemNotes');
     const saveItemBtn = document.getElementById('saveItemBtn');
     const clearFormBtn = document.getElementById('clearFormBtn');
     const stockListContainer = document.getElementById('stockListContainer');
-    const itemCountSpan = document.getElementById('itemCount');
+    const pendingCountSpan = document.getElementById('pendingCount');
+    const submittedCountSpan = document.getElementById('submittedCount');
     const submitBatchBtn = document.getElementById('submitBatchBtn');
     const editIndicator = document.getElementById('editIndicator');
+    const shareWhatsAppBtn = document.getElementById('shareWhatsAppBtn');
+    const shareSingleBtn = document.getElementById('shareSingleBtn');
+    const toast = document.getElementById('toast');
 
-    // ---------- UTILS ----------
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    function updateCounts() {
+      pendingCountSpan.textContent = `${stockItems.length} pending`;
+      submittedCountSpan.textContent = `${submittedCount} submitted`;
+    }
+
     function updatePhotoUI() {
       photoContainer.innerHTML = '';
-      currentPhotos.forEach((photoData, index) => {
-        const thumb = document.createElement('div');
-        thumb.className = 'photo-thumb';
-        thumb.style.backgroundImage = `url(${photoData})`;
-        // delete button
-        const delBtn = document.createElement('span');
-        delBtn.className = 'delete-photo';
-        delBtn.innerHTML = '×';
-        delBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          removePhotoAtIndex(index);
+      if (currentPhotos.length === 0) {
+        photoContainer.innerHTML = '<div style="color:#b0c4db; font-size:0.85rem; width:100%;">No photos yet</div>';
+      } else {
+        currentPhotos.forEach((photoData, index) => {
+          const thumb = document.createElement('div');
+          thumb.className = 'photo-thumb';
+          thumb.style.backgroundImage = `url(${photoData})`;
+          thumb.title = 'Click to view / Remove with X';
+          const delBtn = document.createElement('span');
+          delBtn.className = 'delete-photo';
+          delBtn.innerHTML = '×';
+          delBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            removePhotoAtIndex(index);
+          });
+          thumb.appendChild(delBtn);
+          // Click on photo to view full (optional)
+          thumb.addEventListener('click', () => {
+            window.open(photoData, '_blank');
+          });
+          photoContainer.appendChild(thumb);
         });
-        thumb.appendChild(delBtn);
-        photoContainer.appendChild(thumb);
-      });
+      }
       photoCountLabel.textContent = `${currentPhotos.length} / ${MAX_PHOTOS}`;
     }
 
@@ -410,14 +542,13 @@
 
     function addPhotosFromFiles(files) {
       if (!files || files.length === 0) return;
-      const remainingSlots = MAX_PHOTOS - currentPhotos.length;
-      if (remainingSlots <= 0) {
-        alert(`Maximum ${MAX_PHOTOS} photos allowed. Remove some first.`);
+      const remaining = MAX_PHOTOS - currentPhotos.length;
+      if (remaining <= 0) {
+        showToast('⚠️ Maximum 5 photos allowed');
         return;
       }
-      const filesToProcess = Array.from(files).slice(0, remainingSlots);
-      let loaded = 0;
-      filesToProcess.forEach(file => {
+      const toProcess = Array.from(files).slice(0, remaining);
+      toProcess.forEach(file => {
         const reader = new FileReader();
         reader.onload = (e) => {
           currentPhotos.push(e.target.result);
@@ -425,27 +556,32 @@
         };
         reader.readAsDataURL(file);
       });
+      if (files.length > remaining) {
+        showToast(`Only ${remaining} photo(s) added (max 5)`);
+      }
     }
 
-    function resetCurrentItemForm() {
+    function resetForm() {
       currentPhotos = [];
       editingItemId = null;
       itemNameInput.value = '';
       itemGroupSelect.value = '';
       itemQuantityInput.value = '';
+      itemNotesInput.value = '';
       updatePhotoUI();
-      editIndicator.innerHTML = '<span>✏️ New item</span>';
+      editIndicator.innerHTML = '✏️ <span>New item mode</span>';
     }
 
-    function loadItemIntoForm(item) {
-      // item: { id, name, group, quantity, photos }
+    function loadItemForEditing(item) {
       currentPhotos = [...item.photos];
       editingItemId = item.id;
       itemNameInput.value = item.name || '';
       itemGroupSelect.value = item.group || '';
-      itemQuantityInput.value = item.quantity !== undefined ? item.quantity : '';
+      itemQuantityInput.value = item.quantity ?? '';
+      itemNotesInput.value = item.notes || '';
       updatePhotoUI();
-      editIndicator.innerHTML = `<span>✏️ Editing: <strong>${item.name || '(unnamed)'}</strong></span>`;
+      editIndicator.innerHTML = `✏️ <span>Editing: <strong>${escapeHtml(item.name || 'Unnamed')}</strong></span>`;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function getFormData() {
@@ -453,85 +589,71 @@
         name: itemNameInput.value.trim(),
         group: itemGroupSelect.value,
         quantity: itemQuantityInput.value.trim() === '' ? null : parseFloat(itemQuantityInput.value),
+        notes: itemNotesInput.value.trim(),
       };
     }
 
     function validateForm(data) {
       if (!data.name) return 'Item name is required.';
       if (!data.group) return 'Please select a group.';
-      if (data.quantity === null || isNaN(data.quantity) || data.quantity < 0) return 'Valid quantity is required.';
+      if (data.quantity === null || isNaN(data.quantity) || data.quantity < 0) return 'Enter a valid quantity (0 or more).';
       if (currentPhotos.length === 0) return 'Add at least one photo.';
       return null;
     }
 
-    function saveCurrentAsItem() {
-      const formData = getFormData();
-      const error = validateForm(formData);
-      if (error) {
-        alert(error);
-        return false;
-      }
+    function saveItem() {
+      const data = getFormData();
+      const error = validateForm(data);
+      if (error) { showToast('⚠️ ' + error); return false; }
 
       if (editingItemId !== null) {
-        // Update existing item in stockItems
-        const index = stockItems.findIndex(item => item.id === editingItemId);
-        if (index !== -1) {
-          stockItems[index] = {
-            ...stockItems[index],
-            name: formData.name,
-            group: formData.group,
-            quantity: formData.quantity,
+        const idx = stockItems.findIndex(i => i.id === editingItemId);
+        if (idx !== -1) {
+          stockItems[idx] = {
+            ...stockItems[idx],
+            name: data.name,
+            group: data.group,
+            quantity: data.quantity,
+            notes: data.notes,
             photos: [...currentPhotos],
           };
         } else {
-          // fallback: if id not found, treat as new
           editingItemId = null;
         }
       }
 
       if (editingItemId === null) {
-        // New item
-        const newItem = {
-          id: Date.now() + Math.random().toString(36),
-          name: formData.name,
-          group: formData.group,
-          quantity: formData.quantity,
+        stockItems.push({
+          id: Date.now().toString(36) + Math.random().toString(36).substr(2, 4),
+          name: data.name,
+          group: data.group,
+          quantity: data.quantity,
+          notes: data.notes,
           photos: [...currentPhotos],
-        };
-        stockItems.push(newItem);
+          timestamp: new Date().toISOString(),
+        });
       }
 
-      // Reset form for next entry
-      resetCurrentItemForm();
+      resetForm();
       renderStockList();
+      showToast('✅ Item saved!');
       return true;
     }
 
-    function editItemById(id) {
-      const item = stockItems.find(it => it.id === id);
-      if (!item) return;
-      // load into form
-      loadItemIntoForm(item);
-      // scroll to top for visibility
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function deleteItemFromList(id) {
-      if (!confirm('Remove this item from the batch?')) return;
-      stockItems = stockItems.filter(item => item.id !== id);
-      // If we were editing that item, reset form
-      if (editingItemId === id) {
-        resetCurrentItemForm();
-      }
+    function deleteItem(id) {
+      if (!confirm('Delete this item?')) return;
+      stockItems = stockItems.filter(i => i.id !== id);
+      if (editingItemId === id) resetForm();
       renderStockList();
+      showToast('🗑 Item deleted');
     }
 
     function renderStockList() {
       stockListContainer.innerHTML = '';
-      itemCountSpan.textContent = `${stockItems.length} item${stockItems.length !== 1 ? 's' : ''}`;
+      updateCounts();
 
       if (stockItems.length === 0) {
-        stockListContainer.innerHTML = '<div style="color:#8a9aa8; padding:20px; text-align:center;">No items added yet.</div>';
+        stockListContainer.innerHTML = '<div class="empty-state">📭 No items added yet</div>';
         return;
       }
 
@@ -539,113 +661,124 @@
         const card = document.createElement('div');
         card.className = 'list-item';
 
-        // thumbnail (first photo)
-        const thumbDiv = document.createElement('div');
-        thumbDiv.className = 'item-thumb';
-        if (item.photos && item.photos.length > 0) {
-          thumbDiv.style.backgroundImage = `url(${item.photos[0]})`;
-        } else {
-          thumbDiv.style.background = '#d9e2ef';
-        }
+        const thumb = document.createElement('div');
+        thumb.className = 'item-thumb';
+        thumb.style.backgroundImage = item.photos?.length > 0 ? `url(${item.photos[0]})` : 'none';
+        if (!item.photos?.length) thumb.style.background = '#dce5f0';
 
-        const infoDiv = document.createElement('div');
-        infoDiv.className = 'item-info';
+        const info = document.createElement('div');
+        info.className = 'item-info';
+        info.innerHTML = `
+          <div class="item-name">${escapeHtml(item.name)} <span class="badge">${item.photos?.length || 0} 📷</span></div>
+          <div class="item-meta">
+            <span>📦 ${escapeHtml(item.group)}</span>
+            <span>🔢 ${item.quantity}</span>
+            ${item.notes ? `<span>📝 ${escapeHtml(item.notes.substring(0,20))}${item.notes.length>20?'...':''}</span>` : ''}
+          </div>
+        `;
 
-        const titleDiv = document.createElement('div');
-        titleDiv.className = 'item-title';
-        titleDiv.innerHTML = `${escapeHtml(item.name)} <span class="badge">${item.photos?.length || 0} 📷</span>`;
+        const actions = document.createElement('div');
+        actions.className = 'item-actions';
+        actions.innerHTML = `
+          <button class="icon-btn edit-btn" title="Edit">✏️</button>
+          <button class="icon-btn delete-btn" title="Delete">🗑️</button>
+        `;
 
-        const metaDiv = document.createElement('div');
-        metaDiv.className = 'item-meta';
-        metaDiv.innerHTML = `<span>📦 ${escapeHtml(item.group)}</span> <span>🔢 Qty: ${item.quantity}</span>`;
+        actions.querySelector('.edit-btn').addEventListener('click', () => loadItemForEditing(item));
+        actions.querySelector('.delete-btn').addEventListener('click', () => deleteItem(item.id));
 
-        infoDiv.appendChild(titleDiv);
-        infoDiv.appendChild(metaDiv);
-
-        // edit button
-        const editBtn = document.createElement('button');
-        editBtn.className = 'edit-item-btn';
-        editBtn.innerHTML = '✏️';
-        editBtn.title = 'Edit item';
-        editBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          editItemById(item.id);
-        });
-
-        // delete button
-        const delBtn = document.createElement('button');
-        delBtn.className = 'edit-item-btn';
-        delBtn.innerHTML = '🗑️';
-        delBtn.title = 'Delete item';
-        delBtn.style.marginLeft = '4px';
-        delBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          deleteItemFromList(item.id);
-        });
-
-        const actionWrapper = document.createElement('div');
-        actionWrapper.style.display = 'flex';
-        actionWrapper.appendChild(editBtn);
-        actionWrapper.appendChild(delBtn);
-
-        card.appendChild(thumbDiv);
-        card.appendChild(infoDiv);
-        card.appendChild(actionWrapper);
+        card.appendChild(thumb);
+        card.appendChild(info);
+        card.appendChild(actions);
         stockListContainer.appendChild(card);
       });
     }
 
     function escapeHtml(text) {
-      return String(text).replace(/[&<>"]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        if (m === '"') return '&quot;';
-        return m;
+      return String(text).replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[m]);
+    }
+
+    // WhatsApp Share - formats text summary
+    function generateTextSummary() {
+      if (stockItems.length === 0) return null;
+      let text = `📦 *STOCK BATCH SUMMARY*\n`;
+      text += `📅 ${new Date().toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'})}\n`;
+      text += `⏰ ${new Date().toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'})}\n`;
+      text += `📋 Total Items: ${stockItems.length}\n`;
+      text += `━`.repeat(20) + `\n`;
+      
+      stockItems.forEach((item, i) => {
+        text += `\n${i+1}. *${item.name}*\n`;
+        text += `   📦 Group: ${item.group}\n`;
+        text += `   🔢 Qty: ${item.quantity}\n`;
+        if (item.notes) text += `   📝 ${item.notes}\n`;
+        text += `   📷 Photos: ${item.photos?.length || 0}\n`;
       });
+      
+      text += `\n━`.repeat(20) + `\n`;
+      text += `✅ _Sent via Stock Capture Pro_`;
+      return text;
+    }
+
+    function shareToWhatsApp() {
+      const summary = generateTextSummary();
+      if (!summary) {
+        showToast('⚠️ No items to share');
+        return;
+      }
+      const encoded = encodeURIComponent(summary);
+      const url = `https://wa.me/?text=${encoded}`;
+      window.open(url, '_blank');
+      showToast('💬 Opening WhatsApp...');
+    }
+
+    function shareAsText() {
+      const summary = generateTextSummary();
+      if (!summary) {
+        showToast('⚠️ No items to share');
+        return;
+      }
+      if (navigator.share) {
+        navigator.share({ text: summary }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(summary).then(() => {
+          showToast('📋 Copied to clipboard!');
+        }).catch(() => {
+          prompt('Copy this text:', summary);
+        });
+      }
     }
 
     function submitBatch() {
       if (stockItems.length === 0) {
-        alert('No stock items to submit. Add at least one item.');
+        showToast('⚠️ Add at least one item first');
         return;
       }
-      // Confirmation
-      if (!confirm(`Submit batch with ${stockItems.length} item(s)? This will be saved locally.`)) return;
+      if (!confirm(`Submit batch with ${stockItems.length} item(s)? This saves locally and clears the list.`)) return;
 
-      // Save to localStorage as a submitted batch record (simulate sending)
-      const batchRecord = {
-        batchId: 'BATCH-' + Date.now(),
+      const batch = {
+        batchId: 'BATCH-' + Date.now().toString(36).toUpperCase(),
         timestamp: new Date().toISOString(),
-        items: stockItems,
+        items: [...stockItems],
       };
 
-      // Get existing batches from localStorage
       let batches = [];
-      try {
-        const stored = localStorage.getItem('stockBatches');
-        if (stored) batches = JSON.parse(stored);
-      } catch (e) {}
-      batches.push(batchRecord);
+      try { batches = JSON.parse(localStorage.getItem('stockBatches') || '[]'); } catch(e) {}
+      batches.push(batch);
       localStorage.setItem('stockBatches', JSON.stringify(batches));
 
-      // Clear current list
+      submittedCount += stockItems.length;
       stockItems = [];
-      resetCurrentItemForm();
+      resetForm();
       renderStockList();
-      alert(`✅ Batch submitted! (${batchRecord.batchId}) Stored in browser.`);
-    }
-
-    // Load any previously unsaved? We don't auto-save draft to avoid confusion.
-    // But on page load we could show saved batches count.
-    function loadBatchHistoryInfo() {
-      // optional
+      updateCounts();
+      showToast(`✅ Batch submitted! (${batch.batchId})`);
     }
 
     // Event Listeners
     openCameraBtn.addEventListener('click', () => {
       if (currentPhotos.length >= MAX_PHOTOS) {
-        alert('Maximum 5 photos reached. Remove some to add new.');
+        showToast('⚠️ Max 5 photos. Remove some first.');
         return;
       }
       cameraInput.click();
@@ -653,40 +786,35 @@
 
     cameraInput.addEventListener('change', (e) => {
       addPhotosFromFiles(e.target.files);
-      cameraInput.value = ''; // allow re-select same file
+      cameraInput.value = '';
     });
 
-    saveItemBtn.addEventListener('click', () => {
-      saveCurrentAsItem();
-    });
+    saveItemBtn.addEventListener('click', saveItem);
 
     clearFormBtn.addEventListener('click', () => {
-      if (currentPhotos.length > 0 || itemNameInput.value || itemGroupSelect.value || itemQuantityInput.value) {
-        if (confirm('Clear current form? Unsaved changes will be lost.')) {
-          resetCurrentItemForm();
-        }
+      if (currentPhotos.length || itemNameInput.value || itemGroupSelect.value || itemQuantityInput.value || itemNotesInput.value) {
+        if (confirm('Clear all fields? Unsaved changes lost.')) resetForm();
       } else {
-        resetCurrentItemForm();
+        resetForm();
       }
     });
 
+    shareWhatsAppBtn.addEventListener('click', shareToWhatsApp);
+    shareSingleBtn.addEventListener('click', shareAsText);
     submitBatchBtn.addEventListener('click', submitBatch);
 
     // Initial render
     renderStockList();
     updatePhotoUI();
-    // Ensure edit indicator
-    editIndicator.innerHTML = '<span>✏️ New item</span>';
+    updateCounts();
 
-    // Handle page unload warning if there are unsaved items? (nice to have)
+    // Warn before leaving with unsaved items
     window.addEventListener('beforeunload', (e) => {
       if (stockItems.length > 0) {
         e.preventDefault();
-        e.returnValue = 'You have unsaved stock items. Submit batch before leaving.';
-        return e.returnValue;
+        e.returnValue = 'You have unsaved stock items.';
       }
     });
-
   })();
 </script>
 </body>
