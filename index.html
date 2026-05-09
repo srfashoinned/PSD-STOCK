@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Stock Manager - Capital Output</title>
+    <title>Stock Manager - Camera Fixed</title>
     <style>
         * {
             margin: 0;
@@ -34,7 +34,6 @@
             color: #075e54;
         }
 
-        /* Add Item Form - Small & Minimal */
         .add-form {
             background: white;
             border-radius: 12px;
@@ -83,9 +82,10 @@
             gap: 8px;
             align-items: center;
             margin-bottom: 8px;
+            flex-wrap: wrap;
         }
 
-        .camera-btn {
+        .camera-btn, .upload-btn {
             background: #25D366;
             color: white;
             border: none;
@@ -96,8 +96,16 @@
             font-weight: 500;
         }
 
+        .upload-btn {
+            background: #2196F3;
+        }
+
         .camera-btn:hover {
             background: #128C7E;
+        }
+
+        .upload-btn:hover {
+            background: #0b7dda;
         }
 
         .image-preview {
@@ -132,7 +140,6 @@
             background: #054a41;
         }
 
-        /* Items List */
         .items-section {
             background: white;
             border-radius: 12px;
@@ -274,6 +281,59 @@
             margin-bottom: 5px;
             cursor: pointer;
         }
+
+        .camera-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 1000;
+            flex-direction: column;
+        }
+
+        .camera-modal.active {
+            display: flex;
+        }
+
+        .camera-video {
+            width: 100%;
+            height: auto;
+            max-height: 70vh;
+            background: black;
+        }
+
+        .camera-controls {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            padding: 20px;
+            background: #1a1a1a;
+        }
+
+        .capture-photo-btn, .close-camera-btn {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .capture-photo-btn {
+            background: #25D366;
+            color: white;
+        }
+
+        .close-camera-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        #fileInput {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -282,7 +342,16 @@
         <h1>📦 STOCK MANAGER</h1>
     </div>
 
-    <!-- Small Add Item Form -->
+    <!-- Camera Modal -->
+    <div id="cameraModal" class="camera-modal">
+        <video id="cameraVideo" class="camera-video" autoplay playsinline></video>
+        <div class="camera-controls">
+            <button id="capturePhotoBtn" class="capture-photo-btn">📸 CAPTURE</button>
+            <button id="closeCameraBtn" class="close-camera-btn">❌ CLOSE</button>
+        </div>
+    </div>
+
+    <!-- Add Item Form -->
     <div class="add-form">
         <div class="form-row">
             <input type="text" id="itemName" placeholder="ITEM NAME (E.G., SNT ANANDI)" autocomplete="off" style="text-transform: uppercase;">
@@ -342,7 +411,9 @@
         </div>
         
         <div class="camera-group">
-            <button id="captureBtn" class="camera-btn">📸 CAPTURE PHOTO</button>
+            <button id="openCameraBtn" class="camera-btn">📸 OPEN CAMERA</button>
+            <button id="uploadImageBtn" class="upload-btn">🖼️ UPLOAD PHOTO</button>
+            <input type="file" id="fileInput" accept="image/*" capture="environment">
             <div class="image-preview" id="imagePreview">
                 <span style="font-size: 10px; color:#999;">NO PHOTO</span>
             </div>
@@ -369,9 +440,9 @@
     <button id="clearAllBtn" class="clear-btn">🗑️ CLEAR ALL ITEMS</button>
     <div id="statusMsg" class="status hidden"></div>
     <div class="note">
-        📱 WHATSAPP WILL RECEIVE: <strong>ITEM NAME | QUANTITY | GROUP</strong> (ALL CAPS)<br>
-        📸 PHOTOS ARE STORED IN THE APP ONLY<br>
-        🔤 ALL TEXT AUTOMATICALLY CONVERTED TO CAPITAL LETTERS
+        📱 WHATSAPP: ITEM | QTY | GROUP (ALL CAPS)<br>
+        📸 CAMERA OR UPLOAD PHOTO - BOTH WORK!<br>
+        💡 ON MOBILE: CAMERA OPENS IN A MODAL WINDOW
     </div>
 </div>
 
@@ -380,6 +451,7 @@
     let items = [];
     let currentImageData = null;
     let useCustomGroup = false;
+    let currentStream = null;
 
     // DOM elements
     const itemNameInput = document.getElementById('itemName');
@@ -387,7 +459,6 @@
     const groupSelect = document.getElementById('groupSelect');
     const customGroupInput = document.getElementById('customGroup');
     const imagePreviewDiv = document.getElementById('imagePreview');
-    const captureBtn = document.getElementById('captureBtn');
     const addItemBtn = document.getElementById('addItemBtn');
     const submitBtn = document.getElementById('submitBtn');
     const clearAllBtn = document.getElementById('clearAllBtn');
@@ -398,6 +469,15 @@
     const customGroupDiv = document.getElementById('customGroupDiv');
     const backToSelect = document.getElementById('backToSelect');
     const groupSelectDiv = document.getElementById('groupSelectDiv');
+    
+    // Camera elements
+    const cameraModal = document.getElementById('cameraModal');
+    const cameraVideo = document.getElementById('cameraVideo');
+    const openCameraBtn = document.getElementById('openCameraBtn');
+    const capturePhotoBtn = document.getElementById('capturePhotoBtn');
+    const closeCameraBtn = document.getElementById('closeCameraBtn');
+    const uploadImageBtn = document.getElementById('uploadImageBtn');
+    const fileInput = document.getElementById('fileInput');
 
     // Toggle between predefined and custom group
     toggleCustomGroup.addEventListener('click', () => {
@@ -419,49 +499,90 @@
         return String(str).toUpperCase().trim();
     }
 
-    // Camera capture
-    let stream = null;
-    let videoElement = null;
-
-    async function capturePhoto() {
+    // Open Camera
+    async function openCamera() {
         try {
-            if (!videoElement) {
-                videoElement = document.createElement('video');
-                videoElement.style.position = 'fixed';
-                videoElement.style.top = '-1000px';
-                videoElement.style.left = '-1000px';
-                videoElement.style.width = '300px';
-                videoElement.style.height = 'auto';
-                document.body.appendChild(videoElement);
+            // Stop any existing stream
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
             }
-
-            stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            videoElement.srcObject = stream;
-            await videoElement.play();
-            await new Promise(resolve => setTimeout(resolve, 500));
-
-            const canvas = document.createElement('canvas');
-            canvas.width = videoElement.videoWidth;
-            canvas.height = videoElement.videoHeight;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
             
-            currentImageData = canvas.toDataURL('image/jpeg', 0.8);
-            imagePreviewDiv.innerHTML = `<img src="${currentImageData}" style="width:100%; height:100%; object-fit:cover;">`;
+            const constraints = {
+                video: {
+                    facingMode: { exact: "environment" }  // Use back camera on mobile
+                }
+            };
             
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-                stream = null;
+            try {
+                currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+            } catch (err) {
+                // Fallback to any camera if back camera fails
+                currentStream = await navigator.mediaDevices.getUserMedia({ video: true });
             }
-            videoElement.srcObject = null;
             
-            showStatus('PHOTO CAPTURED!', 'success');
+            cameraVideo.srcObject = currentStream;
+            cameraModal.classList.add('active');
+            showStatus('CAMERA OPENED - CLICK CAPTURE', 'success');
         } catch (err) {
             console.error('Camera error:', err);
-            showStatus('CAMERA ACCESS DENIED', 'error');
-            currentImageData = null;
-            imagePreviewDiv.innerHTML = '<span style="font-size:10px; color:#999;">NO PHOTO</span>';
+            showStatus('CANNOT ACCESS CAMERA. USE UPLOAD PHOTO INSTEAD.', 'error');
+            
+            // Try file upload as fallback
+            fileInput.click();
         }
+    }
+
+    // Capture Photo from Camera
+    function capturePhoto() {
+        if (!cameraVideo.videoWidth || !cameraVideo.videoHeight) {
+            showStatus('PLEASE WAIT, CAMERA IS LOADING...', 'error');
+            return;
+        }
+        
+        const canvas = document.createElement('canvas');
+        canvas.width = cameraVideo.videoWidth;
+        canvas.height = cameraVideo.videoHeight;
+        const context = canvas.getContext('2d');
+        context.drawImage(cameraVideo, 0, 0, canvas.width, canvas.height);
+        
+        currentImageData = canvas.toDataURL('image/jpeg', 0.8);
+        imagePreviewDiv.innerHTML = `<img src="${currentImageData}" style="width:100%; height:100%; object-fit:cover;">`;
+        
+        // Close camera modal
+        closeCamera();
+        showStatus('PHOTO CAPTURED!', 'success');
+    }
+
+    // Close Camera Modal
+    function closeCamera() {
+        cameraModal.classList.remove('active');
+        if (currentStream) {
+            currentStream.getTracks().forEach(track => track.stop());
+            currentStream = null;
+        }
+        cameraVideo.srcObject = null;
+    }
+
+    // Upload Image from File
+    function uploadImage() {
+        fileInput.click();
+    }
+
+    // Handle file selection
+    function handleFileSelect(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            currentImageData = e.target.result;
+            imagePreviewDiv.innerHTML = `<img src="${currentImageData}" style="width:100%; height:100%; object-fit:cover;">`;
+            showStatus('PHOTO UPLOADED!', 'success');
+        };
+        reader.readAsDataURL(file);
+        
+        // Reset file input so same file can be selected again
+        fileInput.value = '';
     }
 
     // Get current group (uppercase)
@@ -489,7 +610,6 @@
             return;
         }
         
-        // Ensure group is not empty
         if (!group || group === '') {
             group = 'GENERAL';
         }
@@ -511,7 +631,6 @@
         currentImageData = null;
         imagePreviewDiv.innerHTML = '<span style="font-size:10px; color:#999;">NO PHOTO</span>';
         
-        // Reset custom group if used
         if (useCustomGroup) {
             customGroupInput.value = '';
         }
@@ -536,14 +655,12 @@
             return;
         }
         
-        // Compact list display (ALL CAPS)
         let compactHtml = '';
         items.forEach((item, idx) => {
             compactHtml += `<div class="compact-item">${idx+1}. ${item.name} | ${item.group} | QTY: ${item.qty}</div>`;
         });
         compactListDiv.innerHTML = compactHtml;
         
-        // Detailed list with photos (ALL CAPS)
         let detailHtml = '';
         items.forEach(item => {
             const hasPhoto = item.image && item.image !== null;
@@ -561,7 +678,7 @@
         detailListDiv.innerHTML = detailHtml;
     }
     
-    // Format message for WhatsApp - SIMPLE: only Item | QTY | Group (ALL CAPS)
+    // Format message for WhatsApp
     function formatWhatsAppMessage() {
         if (items.length === 0) {
             return null;
@@ -596,7 +713,6 @@
         return true;
     }
     
-    // Send to group (user selects)
     function sendToGroup() {
         const message = formatWhatsAppMessage();
         if (!message) {
@@ -610,7 +726,6 @@
         showStatus('OPENED WHATSAPP - PLEASE SELECT YOUR GROUP', 'success');
     }
     
-    // Submit handler
     function handleSubmit() {
         if (items.length === 0) {
             showStatus('PLEASE ADD AT LEAST ONE ITEM FIRST', 'error');
@@ -621,13 +736,12 @@
         showStatus('OPENING WHATSAPP TO SEND REPORT TO 7588756668...', 'success');
         
         setTimeout(() => {
-            if (confirm('ALSO WANT TO SEND TO A WHATSAPP GROUP? CLICK OK TO OPEN WHATSAPP (YOU CAN SELECT GROUP MANUALLY)')) {
+            if (confirm('ALSO WANT TO SEND TO A WHATSAPP GROUP?')) {
                 sendToGroup();
             }
         }, 500);
     }
     
-    // Clear all
     function clearAll() {
         if (items.length > 0 && confirm('DELETE ALL ITEMS?')) {
             items = [];
@@ -649,7 +763,11 @@
     addItemBtn.addEventListener('click', addItem);
     submitBtn.addEventListener('click', handleSubmit);
     clearAllBtn.addEventListener('click', clearAll);
-    captureBtn.addEventListener('click', capturePhoto);
+    openCameraBtn.addEventListener('click', openCamera);
+    capturePhotoBtn.addEventListener('click', capturePhoto);
+    closeCameraBtn.addEventListener('click', closeCamera);
+    uploadImageBtn.addEventListener('click', uploadImage);
+    fileInput.addEventListener('change', handleFileSelect);
     
     // Enter key
     itemNameInput.addEventListener('keypress', (e) => {
@@ -662,7 +780,7 @@
         if (e.key === 'Enter') addItem();
     });
     
-    // Auto uppercase for inputs
+    // Auto uppercase
     itemNameInput.addEventListener('input', function() {
         this.value = this.value.toUpperCase();
     });
@@ -670,17 +788,7 @@
         this.value = this.value.toUpperCase();
     });
     
-    // Check camera
-    async function checkCamera() {
-        try {
-            await navigator.mediaDevices.getUserMedia({ video: true });
-        } catch (err) {
-            console.log('Camera not available');
-        }
-    }
-    checkCamera();
-    
-    // Set default quantity to 4
+    // Set default quantity
     qtyInput.value = '4';
     
     renderLists();
