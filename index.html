@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Stock Manager - Simple WhatsApp</title>
+    <title>Stock Manager - Capital Output</title>
     <style>
         * {
             margin: 0;
@@ -62,6 +62,20 @@
         .form-row input:focus, .form-row select:focus {
             outline: none;
             border-color: #075e54;
+        }
+
+        .custom-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .custom-group input {
+            flex: 1;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
         }
 
         .camera-group {
@@ -136,7 +150,6 @@
             border-bottom: 1px solid #eee;
         }
 
-        /* Compact list - one line per product */
         .compact-list {
             margin-bottom: 16px;
         }
@@ -146,9 +159,9 @@
             padding: 6px 0;
             border-bottom: 1px solid #f0f0f0;
             font-family: monospace;
+            font-weight: 500;
         }
 
-        /* Detailed view with photos */
         .detail-list {
             display: flex;
             flex-direction: column;
@@ -196,7 +209,6 @@
             cursor: pointer;
         }
 
-        /* Submit Button */
         .submit-btn {
             background: #25D366;
             color: white;
@@ -247,10 +259,6 @@
             display: none;
         }
 
-        input, select, textarea {
-            background: white;
-        }
-        
         .note {
             font-size: 11px;
             color: #999;
@@ -258,74 +266,126 @@
             margin-top: 12px;
             padding: 8px;
         }
+
+        .group-toggle {
+            font-size: 12px;
+            color: #075e54;
+            text-align: right;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
-        <h1>📦 Stock Manager</h1>
+        <h1>📦 STOCK MANAGER</h1>
     </div>
 
     <!-- Small Add Item Form -->
     <div class="add-form">
         <div class="form-row">
-            <input type="text" id="itemName" placeholder="Item name (e.g., SNT ANANDI)" autocomplete="off">
-            <input type="number" id="qty" placeholder="QTY" value="1">
-        </div>
-        <div class="form-row">
-            <select id="group">
-                <option value="Suit">Group: Suit</option>
-                <option value="Shirt">Group: Shirt</option>
-                <option value="Pant">Group: Pant</option>
-                <option value="Accessory">Group: Accessory</option>
-                <option value="Other">Group: Other</option>
-            </select>
+            <input type="text" id="itemName" placeholder="ITEM NAME (E.G., SNT ANANDI)" autocomplete="off" style="text-transform: uppercase;">
+            <input type="number" id="qty" placeholder="QTY" value="4">
         </div>
         
-        <div class="camera-group">
-            <button id="captureBtn" class="camera-btn">📸 Capture Photo</button>
-            <div class="image-preview" id="imagePreview">
-                <span style="font-size: 10px; color:#999;">No photo</span>
+        <div id="groupSelectDiv">
+            <div class="form-row">
+                <select id="groupSelect">
+                    <option value="BEATS PLZO">BEATS PLZO</option>
+                    <option value="BEATS SUIT">BEATS SUIT</option>
+                    <option value="BOTTOM WORK">BOTTOM WORK</option>
+                    <option value="CATALOGUE SUIT">CATALOGUE SUIT</option>
+                    <option value="COTTON">COTTON</option>
+                    <option value="COTTON DUPATTA">COTTON DUPATTA</option>
+                    <option value="COTTON SUIT">COTTON SUIT</option>
+                    <option value="CRUNCHY SUIT">CRUNCHY SUIT</option>
+                    <option value="Dupatta">DUPATTA</option>
+                    <option value="FARSHI">FARSHI</option>
+                    <option value="FARSI">FARSI</option>
+                    <option value="FIRDOS SUIT">FIRDOS SUIT</option>
+                    <option value="FLUTE PLAZO">FLUTE PLAZO</option>
+                    <option value="FROCK">FROCK</option>
+                    <option value="GARARA">GARARA</option>
+                    <option value="General">GENERAL</option>
+                    <option value="GENTS">GENTS</option>
+                    <option value="GOWN">GOWN</option>
+                    <option value="KAPDA">KAPDA</option>
+                    <option value="LACHA">LACHA</option>
+                    <option value="MAKHNA">MAKHNA</option>
+                    <option value="NAYRA">NAYRA</option>
+                    <option value="ORGANZA PLAZO">ORGANZA PLAZO</option>
+                    <option value="ORGANZA SUIT">ORGANZA SUIT</option>
+                    <option value="ORGANZA TROUSER">ORGANZA TROUSER</option>
+                    <option value="PAK SUIT">PAK SUIT</option>
+                    <option value="Paplon">PAPLON</option>
+                    <option value="PLAZO">PLAZO</option>
+                    <option value="READYMADE">READYMADE</option>
+                    <option value="RUSSIAN PLAZO">RUSSIAN PLAZO</option>
+                    <option value="SHADED PLAZO">SHADED PLAZO</option>
+                    <option value="SHARARA">SHARARA</option>
+                    <option value="SS">SS</option>
+                    <option value="SUIT">SUIT</option>
+                    <option value="TROSUER">TROUSER</option>
+                    <option value="VELVET SUIT">VELVET SUIT</option>
+                </select>
             </div>
         </div>
         
-        <button id="addItemBtn" class="add-btn">+ Add Item</button>
+        <div class="group-toggle" id="toggleCustomGroup">✏️ OR TYPE CUSTOM GROUP</div>
+        
+        <div id="customGroupDiv" style="display: none;">
+            <div class="custom-group">
+                <input type="text" id="customGroup" placeholder="TYPE CUSTOM GROUP" style="text-transform: uppercase;">
+            </div>
+            <div class="group-toggle" id="backToSelect" style="text-align: center;">← BACK TO SELECT</div>
+        </div>
+        
+        <div class="camera-group">
+            <button id="captureBtn" class="camera-btn">📸 CAPTURE PHOTO</button>
+            <div class="image-preview" id="imagePreview">
+                <span style="font-size: 10px; color:#999;">NO PHOTO</span>
+            </div>
+        </div>
+        
+        <button id="addItemBtn" class="add-btn">+ ADD ITEM</button>
     </div>
 
     <!-- Items Display -->
     <div class="items-section">
-        <div class="section-title">📋 Current Stock List</div>
+        <div class="section-title">📋 CURRENT STOCK LIST</div>
         <div id="compactList" class="compact-list">
-            <div style="color:#999; text-align:center; padding:12px;">No items added yet</div>
+            <div style="color:#999; text-align:center; padding:12px;">NO ITEMS ADDED YET</div>
         </div>
         
-        <div class="section-title" style="margin-top: 16px;">🖼️ Items with Photos (App only)</div>
+        <div class="section-title" style="margin-top: 16px;">🖼️ ITEMS WITH PHOTOS (APP ONLY)</div>
         <div id="detailList" class="detail-list">
-            <div style="color:#999; text-align:center; padding:12px;">No items with photos</div>
+            <div style="color:#999; text-align:center; padding:12px;">NO ITEMS WITH PHOTOS</div>
         </div>
     </div>
 
     <!-- Action Buttons -->
-    <button id="submitBtn" class="submit-btn">📤 Send to WhatsApp</button>
-    <button id="clearAllBtn" class="clear-btn">🗑️ Clear All Items</button>
+    <button id="submitBtn" class="submit-btn">📤 SEND TO WHATSAPP</button>
+    <button id="clearAllBtn" class="clear-btn">🗑️ CLEAR ALL ITEMS</button>
     <div id="statusMsg" class="status hidden"></div>
     <div class="note">
-        📱 WhatsApp will receive: <strong>Item Name | Quantity | Group</strong> (one line per item)<br>
-        Photos are stored in the app only for reference
+        📱 WHATSAPP WILL RECEIVE: <strong>ITEM NAME | QUANTITY | GROUP</strong> (ALL CAPS)<br>
+        📸 PHOTOS ARE STORED IN THE APP ONLY<br>
+        🔤 ALL TEXT AUTOMATICALLY CONVERTED TO CAPITAL LETTERS
     </div>
 </div>
 
 <script>
     // Store items array
     let items = [];
-
-    // Current captured image (base64)
     let currentImageData = null;
+    let useCustomGroup = false;
 
     // DOM elements
     const itemNameInput = document.getElementById('itemName');
     const qtyInput = document.getElementById('qty');
-    const groupSelect = document.getElementById('group');
+    const groupSelect = document.getElementById('groupSelect');
+    const customGroupInput = document.getElementById('customGroup');
     const imagePreviewDiv = document.getElementById('imagePreview');
     const captureBtn = document.getElementById('captureBtn');
     const addItemBtn = document.getElementById('addItemBtn');
@@ -334,6 +394,30 @@
     const compactListDiv = document.getElementById('compactList');
     const detailListDiv = document.getElementById('detailList');
     const statusMsg = document.getElementById('statusMsg');
+    const toggleCustomGroup = document.getElementById('toggleCustomGroup');
+    const customGroupDiv = document.getElementById('customGroupDiv');
+    const backToSelect = document.getElementById('backToSelect');
+    const groupSelectDiv = document.getElementById('groupSelectDiv');
+
+    // Toggle between predefined and custom group
+    toggleCustomGroup.addEventListener('click', () => {
+        groupSelectDiv.style.display = 'none';
+        customGroupDiv.style.display = 'block';
+        useCustomGroup = true;
+        customGroupInput.focus();
+    });
+
+    backToSelect.addEventListener('click', () => {
+        groupSelectDiv.style.display = 'block';
+        customGroupDiv.style.display = 'none';
+        useCustomGroup = false;
+        customGroupInput.value = '';
+    });
+
+    // Convert to uppercase function
+    function toUpper(str) {
+        return String(str).toUpperCase().trim();
+    }
 
     // Camera capture
     let stream = null;
@@ -371,29 +455,43 @@
             }
             videoElement.srcObject = null;
             
-            showStatus('Photo captured!', 'success');
+            showStatus('PHOTO CAPTURED!', 'success');
         } catch (err) {
             console.error('Camera error:', err);
-            showStatus('Camera access denied', 'error');
+            showStatus('CAMERA ACCESS DENIED', 'error');
             currentImageData = null;
-            imagePreviewDiv.innerHTML = '<span style="font-size:10px; color:#999;">No photo</span>';
+            imagePreviewDiv.innerHTML = '<span style="font-size:10px; color:#999;">NO PHOTO</span>';
+        }
+    }
+
+    // Get current group (uppercase)
+    function getCurrentGroup() {
+        if (useCustomGroup) {
+            return toUpper(customGroupInput.value) || 'GENERAL';
+        } else {
+            return groupSelect.value;
         }
     }
 
     // Add item
     function addItem() {
-        const name = itemNameInput.value.trim();
+        let name = toUpper(itemNameInput.value);
         const qty = parseInt(qtyInput.value);
-        const group = groupSelect.value.replace('Group: ', '');
+        let group = getCurrentGroup();
         
         if (!name) {
-            showStatus('Please enter item name', 'error');
+            showStatus('PLEASE ENTER ITEM NAME', 'error');
             return;
         }
         
         if (isNaN(qty) || qty <= 0) {
-            showStatus('Please enter valid quantity', 'error');
+            showStatus('PLEASE ENTER VALID QUANTITY', 'error');
             return;
+        }
+        
+        // Ensure group is not empty
+        if (!group || group === '') {
+            group = 'GENERAL';
         }
         
         const newItem = {
@@ -409,37 +507,43 @@
         
         // Clear form
         itemNameInput.value = '';
-        qtyInput.value = '1';
+        qtyInput.value = '4';
         currentImageData = null;
-        imagePreviewDiv.innerHTML = '<span style="font-size:10px; color:#999;">No photo</span>';
+        imagePreviewDiv.innerHTML = '<span style="font-size:10px; color:#999;">NO PHOTO</span>';
+        
+        // Reset custom group if used
+        if (useCustomGroup) {
+            customGroupInput.value = '';
+        }
+        
         itemNameInput.focus();
         
-        showStatus(`Added: ${name} | ${qty} | ${group}`, 'success');
+        showStatus(`ADDED: ${name} | ${qty} | ${group}`, 'success');
     }
     
     // Remove item
     function removeItem(id) {
         items = items.filter(item => item.id !== id);
         renderLists();
-        showStatus('Item removed', 'success');
+        showStatus('ITEM REMOVED', 'success');
     }
     
     // Render both lists
     function renderLists() {
         if (items.length === 0) {
-            compactListDiv.innerHTML = '<div style="color:#999; text-align:center; padding:12px;">No items added yet</div>';
-            detailListDiv.innerHTML = '<div style="color:#999; text-align:center; padding:12px;">No items with photos</div>';
+            compactListDiv.innerHTML = '<div style="color:#999; text-align:center; padding:12px;">NO ITEMS ADDED YET</div>';
+            detailListDiv.innerHTML = '<div style="color:#999; text-align:center; padding:12px;">NO ITEMS WITH PHOTOS</div>';
             return;
         }
         
-        // Compact list display
+        // Compact list display (ALL CAPS)
         let compactHtml = '';
         items.forEach((item, idx) => {
             compactHtml += `<div class="compact-item">${idx+1}. ${item.name} | ${item.group} | QTY: ${item.qty}</div>`;
         });
         compactListDiv.innerHTML = compactHtml;
         
-        // Detailed list with photos (app only)
+        // Detailed list with photos (ALL CAPS)
         let detailHtml = '';
         items.forEach(item => {
             const hasPhoto = item.image && item.image !== null;
@@ -448,7 +552,7 @@
                     ${hasPhoto ? `<img class="detail-img" src="${item.image}" alt="product">` : `<div class="detail-img" style="display:flex; align-items:center; justify-content:center; font-size:24px;">📷</div>`}
                     <div class="detail-info">
                         <strong>${item.name}</strong> - QTY: ${item.qty}
-                        <p>Group: ${item.group}</p>
+                        <p>GROUP: ${item.group}</p>
                     </div>
                     <button class="remove-btn" onclick="removeItem(${item.id})">✖</button>
                 </div>
@@ -457,7 +561,7 @@
         detailListDiv.innerHTML = detailHtml;
     }
     
-    // Format message for WhatsApp - SIMPLE: only Item | QTY | Group
+    // Format message for WhatsApp - SIMPLE: only Item | QTY | Group (ALL CAPS)
     function formatWhatsAppMessage() {
         if (items.length === 0) {
             return null;
@@ -470,8 +574,8 @@
         });
         
         message += `\n━━━━━━━━━━━━━━━━━━━━━\n`;
-        message += `Total Items: ${items.length} | Total QTY: ${items.reduce((sum, i) => sum + i.qty, 0)}\n`;
-        message += `Sent from Stock Manager App`;
+        message += `TOTAL ITEMS: ${items.length} | TOTAL QTY: ${items.reduce((sum, i) => sum + i.qty, 0)}\n`;
+        message += `SENT FROM STOCK MANAGER APP`;
         
         return message;
     }
@@ -480,7 +584,7 @@
     function sendToWhatsApp() {
         const message = formatWhatsAppMessage();
         if (!message) {
-            showStatus('No items to send! Add some items first.', 'error');
+            showStatus('NO ITEMS TO SEND! ADD SOME ITEMS FIRST.', 'error');
             return false;
         }
         
@@ -496,30 +600,28 @@
     function sendToGroup() {
         const message = formatWhatsAppMessage();
         if (!message) {
-            showStatus('No items to send!', 'error');
+            showStatus('NO ITEMS TO SEND!', 'error');
             return;
         }
         
         const encodedMessage = encodeURIComponent(message);
         const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
         window.open(whatsappUrl, '_blank');
-        showStatus('Opened WhatsApp - please select your group', 'success');
+        showStatus('OPENED WHATSAPP - PLEASE SELECT YOUR GROUP', 'success');
     }
     
     // Submit handler
     function handleSubmit() {
         if (items.length === 0) {
-            showStatus('Please add at least one item first', 'error');
+            showStatus('PLEASE ADD AT LEAST ONE ITEM FIRST', 'error');
             return;
         }
         
-        // Send to specific number (7588756668)
         sendToWhatsApp();
-        showStatus('Opening WhatsApp to send report to 7588756668...', 'success');
+        showStatus('OPENING WHATSAPP TO SEND REPORT TO 7588756668...', 'success');
         
-        // Optional: ask for group
         setTimeout(() => {
-            if (confirm('Also want to send to a WhatsApp group? Click OK to open WhatsApp (you can select group manually)')) {
+            if (confirm('ALSO WANT TO SEND TO A WHATSAPP GROUP? CLICK OK TO OPEN WHATSAPP (YOU CAN SELECT GROUP MANUALLY)')) {
                 sendToGroup();
             }
         }, 500);
@@ -527,10 +629,10 @@
     
     // Clear all
     function clearAll() {
-        if (items.length > 0 && confirm('Delete all items?')) {
+        if (items.length > 0 && confirm('DELETE ALL ITEMS?')) {
             items = [];
             renderLists();
-            showStatus('All items cleared', 'success');
+            showStatus('ALL ITEMS CLEARED', 'success');
         }
     }
     
@@ -556,6 +658,17 @@
     qtyInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') addItem();
     });
+    customGroupInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') addItem();
+    });
+    
+    // Auto uppercase for inputs
+    itemNameInput.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+    });
+    customGroupInput.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+    });
     
     // Check camera
     async function checkCamera() {
@@ -566,6 +679,9 @@
         }
     }
     checkCamera();
+    
+    // Set default quantity to 4
+    qtyInput.value = '4';
     
     renderLists();
 </script>
