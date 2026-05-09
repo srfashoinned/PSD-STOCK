@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Stock Manager - Camera Fixed</title>
+    <title>StockFlow</title>
     <style>
         * {
             margin: 0;
@@ -13,242 +13,323 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: #f5f5f5;
-            padding: 16px;
+            background: #f0f2f5;
+            padding: 12px;
             color: #1a1a1a;
         }
 
         .container {
-            max-width: 600px;
+            max-width: 500px;
             margin: 0 auto;
         }
 
+        /* Header */
         .header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .header h1 {
-            font-size: 1.5rem;
-            font-weight: 500;
-            color: #075e54;
+            font-size: 1.6rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #075e54, #128C7E);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .add-form {
+        /* Add Card */
+        .card {
             background: white;
-            border-radius: 12px;
-            padding: 12px;
+            border-radius: 20px;
+            padding: 16px;
             margin-bottom: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
 
-        .form-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 8px;
-            flex-wrap: wrap;
+        .input-group {
+            margin-bottom: 12px;
         }
 
-        .form-row input, .form-row select {
-            flex: 1;
-            padding: 8px 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
+        .input-group input, .group-search-container {
+            width: 100%;
+            padding: 12px;
+            border: 1.5px solid #e4e6eb;
+            border-radius: 14px;
+            font-size: 15px;
             font-family: inherit;
+            transition: all 0.2s;
+            background: white;
         }
 
-        .form-row input:focus, .form-row select:focus {
+        .input-group input:focus {
             outline: none;
-            border-color: #075e54;
+            border-color: #25D366;
         }
 
-        .custom-group {
+        .row-2 {
             display: flex;
-            gap: 8px;
-            margin-bottom: 8px;
+            gap: 10px;
+            margin-bottom: 12px;
         }
 
-        .custom-group input {
+        .row-2 .input-group {
             flex: 1;
-            padding: 8px 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
+            margin-bottom: 0;
         }
 
-        .camera-group {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            margin-bottom: 8px;
-            flex-wrap: wrap;
+        /* Group Search */
+        .group-search-container {
+            position: relative;
+            padding: 0;
         }
 
-        .camera-btn, .upload-btn {
-            background: #25D366;
-            color: white;
+        .group-search-container input {
+            width: 100%;
+            padding: 12px;
             border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 13px;
+            border-radius: 14px;
+            font-size: 15px;
+        }
+
+        .group-search-container input:focus {
+            outline: none;
+        }
+
+        .group-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e4e6eb;
+            border-radius: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .group-suggestions.show {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 10px 12px;
             cursor: pointer;
+            font-size: 14px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .suggestion-item:hover {
+            background: #f0f2f5;
+        }
+
+        /* Camera Buttons */
+        .camera-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .btn-camera, .btn-upload {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 14px;
+            font-size: 14px;
             font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
 
-        .upload-btn {
-            background: #2196F3;
+        .btn-camera {
+            background: #075e54;
+            color: white;
         }
 
-        .camera-btn:hover {
-            background: #128C7E;
+        .btn-camera:hover {
+            background: #054a41;
         }
 
-        .upload-btn:hover {
-            background: #0b7dda;
+        .btn-upload {
+            background: #e4e6eb;
+            color: #1a1a1a;
+        }
+
+        .btn-upload:hover {
+            background: #d0d3d9;
         }
 
         .image-preview {
-            width: 50px;
-            height: 50px;
-            background: #f0f0f0;
-            border-radius: 8px;
+            width: 60px;
+            height: 60px;
+            background: #f5f5f5;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            border: 1px solid #e4e6eb;
         }
 
-        .image-preview img {
-            max-width: 100%;
-            max-height: 100%;
-        }
-
-        .add-btn {
-            background: #075e54;
-            color: white;
-            border: none;
-            padding: 8px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        .add-btn:hover {
-            background: #054a41;
-        }
-
-        .items-section {
-            background: white;
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .section-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #666;
-            margin-bottom: 10px;
-            padding-bottom: 6px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .compact-list {
-            margin-bottom: 16px;
-        }
-
-        .compact-item {
-            font-size: 13px;
-            padding: 6px 0;
-            border-bottom: 1px solid #f0f0f0;
-            font-family: monospace;
-            font-weight: 500;
-        }
-
-        .detail-list {
+        .preview-container {
             display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .detail-card {
-            display: flex;
-            gap: 12px;
-            padding: 10px;
-            background: #fafafa;
-            border-radius: 10px;
             align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
         }
 
-        .detail-img {
-            width: 60px;
-            height: 60px;
-            background: #e0e0e0;
-            border-radius: 8px;
-            object-fit: cover;
-        }
-
-        .detail-info {
-            flex: 1;
-        }
-
-        .detail-info strong {
-            font-size: 14px;
-        }
-
-        .detail-info p {
+        .preview-label {
             font-size: 12px;
-            color: #666;
-            margin-top: 2px;
+            color: #65676b;
         }
 
-        .remove-btn {
-            background: #ff4444;
-            color: white;
-            border: none;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 11px;
-            cursor: pointer;
-        }
-
-        .submit-btn {
+        .btn-add {
+            width: 100%;
+            padding: 12px;
             background: #25D366;
             color: white;
             border: none;
-            padding: 14px;
-            border-radius: 12px;
+            border-radius: 14px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            width: 100%;
-            margin-bottom: 16px;
+            transition: all 0.2s;
         }
 
-        .submit-btn:hover {
+        .btn-add:hover {
             background: #128C7E;
         }
 
-        .clear-btn {
-            background: #dc3545;
+        /* Items List */
+        .items-list {
+            background: white;
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #65676b;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .stock-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f2f5;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stock-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-name {
+            color: #1a1a1a;
+        }
+
+        .item-details {
+            color: #65676b;
+            font-weight: normal;
+            font-size: 12px;
+        }
+
+        .photo-items {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .photo-card {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 14px;
+        }
+
+        .photo-card-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: #e4e6eb;
+        }
+
+        .photo-card-info {
+            flex: 1;
+        }
+
+        .photo-card-info strong {
+            font-size: 14px;
+        }
+
+        .photo-card-info p {
+            font-size: 11px;
+            color: #65676b;
+            margin-top: 2px;
+        }
+
+        .remove-icon {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #dc3545;
+            padding: 4px 8px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .btn-whatsapp {
+            flex: 2;
+            padding: 12px;
+            background: #25D366;
             color: white;
             border: none;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 13px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
-            width: 100%;
+        }
+
+        .btn-clear {
+            flex: 1;
+            padding: 12px;
+            background: #e4e6eb;
+            color: #dc3545;
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
         }
 
         .status {
             text-align: center;
             font-size: 12px;
-            padding: 8px;
-            border-radius: 8px;
+            padding: 10px;
+            border-radius: 12px;
             margin-top: 10px;
         }
 
@@ -266,22 +347,14 @@
             display: none;
         }
 
-        .note {
-            font-size: 11px;
-            color: #999;
+        .empty-state {
             text-align: center;
-            margin-top: 12px;
-            padding: 8px;
+            color: #bcc0c4;
+            padding: 24px;
+            font-size: 13px;
         }
 
-        .group-toggle {
-            font-size: 12px;
-            color: #075e54;
-            text-align: right;
-            margin-bottom: 5px;
-            cursor: pointer;
-        }
-
+        /* Camera Modal */
         .camera-modal {
             display: none;
             position: fixed;
@@ -303,6 +376,7 @@
             height: auto;
             max-height: 70vh;
             background: black;
+            object-fit: cover;
         }
 
         .camera-controls {
@@ -311,24 +385,31 @@
             justify-content: center;
             padding: 20px;
             background: #1a1a1a;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
         }
 
-        .capture-photo-btn, .close-camera-btn {
+        .capture-btn, .close-cam-btn {
             padding: 12px 24px;
             font-size: 16px;
             border: none;
-            border-radius: 8px;
+            border-radius: 30px;
             cursor: pointer;
+            font-weight: 600;
         }
 
-        .capture-photo-btn {
+        .capture-btn {
             background: #25D366;
             color: white;
+            flex: 1;
         }
 
-        .close-camera-btn {
+        .close-cam-btn {
             background: #dc3545;
             color: white;
+            flex: 1;
         }
 
         #fileInput {
@@ -339,125 +420,95 @@
 <body>
 <div class="container">
     <div class="header">
-        <h1>📦 STOCK MANAGER</h1>
+        <h1>stockflow</h1>
     </div>
 
     <!-- Camera Modal -->
     <div id="cameraModal" class="camera-modal">
         <video id="cameraVideo" class="camera-video" autoplay playsinline></video>
         <div class="camera-controls">
-            <button id="capturePhotoBtn" class="capture-photo-btn">📸 CAPTURE</button>
-            <button id="closeCameraBtn" class="close-camera-btn">❌ CLOSE</button>
+            <button id="capturePhotoBtn" class="capture-btn">📸 capture</button>
+            <button id="closeCameraBtn" class="close-cam-btn">✕ close</button>
         </div>
     </div>
 
-    <!-- Add Item Form -->
-    <div class="add-form">
-        <div class="form-row">
-            <input type="text" id="itemName" placeholder="ITEM NAME (E.G., SNT ANANDI)" autocomplete="off" style="text-transform: uppercase;">
-            <input type="number" id="qty" placeholder="QTY" value="4">
-        </div>
-        
-        <div id="groupSelectDiv">
-            <div class="form-row">
-                <select id="groupSelect">
-                    <option value="BEATS PLZO">BEATS PLZO</option>
-                    <option value="BEATS SUIT">BEATS SUIT</option>
-                    <option value="BOTTOM WORK">BOTTOM WORK</option>
-                    <option value="CATALOGUE SUIT">CATALOGUE SUIT</option>
-                    <option value="COTTON">COTTON</option>
-                    <option value="COTTON DUPATTA">COTTON DUPATTA</option>
-                    <option value="COTTON SUIT">COTTON SUIT</option>
-                    <option value="CRUNCHY SUIT">CRUNCHY SUIT</option>
-                    <option value="Dupatta">DUPATTA</option>
-                    <option value="FARSHI">FARSHI</option>
-                    <option value="FARSI">FARSI</option>
-                    <option value="FIRDOS SUIT">FIRDOS SUIT</option>
-                    <option value="FLUTE PLAZO">FLUTE PLAZO</option>
-                    <option value="FROCK">FROCK</option>
-                    <option value="GARARA">GARARA</option>
-                    <option value="General">GENERAL</option>
-                    <option value="GENTS">GENTS</option>
-                    <option value="GOWN">GOWN</option>
-                    <option value="KAPDA">KAPDA</option>
-                    <option value="LACHA">LACHA</option>
-                    <option value="MAKHNA">MAKHNA</option>
-                    <option value="NAYRA">NAYRA</option>
-                    <option value="ORGANZA PLAZO">ORGANZA PLAZO</option>
-                    <option value="ORGANZA SUIT">ORGANZA SUIT</option>
-                    <option value="ORGANZA TROUSER">ORGANZA TROUSER</option>
-                    <option value="PAK SUIT">PAK SUIT</option>
-                    <option value="Paplon">PAPLON</option>
-                    <option value="PLAZO">PLAZO</option>
-                    <option value="READYMADE">READYMADE</option>
-                    <option value="RUSSIAN PLAZO">RUSSIAN PLAZO</option>
-                    <option value="SHADED PLAZO">SHADED PLAZO</option>
-                    <option value="SHARARA">SHARARA</option>
-                    <option value="SS">SS</option>
-                    <option value="SUIT">SUIT</option>
-                    <option value="TROSUER">TROUSER</option>
-                    <option value="VELVET SUIT">VELVET SUIT</option>
-                </select>
+    <!-- Add Item Card -->
+    <div class="card">
+        <div class="row-2">
+            <div class="input-group">
+                <input type="text" id="itemName" placeholder="item name" autocomplete="off" style="text-transform: uppercase;">
+            </div>
+            <div class="input-group">
+                <input type="number" id="qty" placeholder="qty" value="4">
             </div>
         </div>
-        
-        <div class="group-toggle" id="toggleCustomGroup">✏️ OR TYPE CUSTOM GROUP</div>
-        
-        <div id="customGroupDiv" style="display: none;">
-            <div class="custom-group">
-                <input type="text" id="customGroup" placeholder="TYPE CUSTOM GROUP" style="text-transform: uppercase;">
+
+        <div class="input-group">
+            <div class="group-search-container">
+                <input type="text" id="groupSearch" placeholder="search or type group" autocomplete="off" style="text-transform: uppercase;">
+                <div id="groupSuggestions" class="group-suggestions"></div>
             </div>
-            <div class="group-toggle" id="backToSelect" style="text-align: center;">← BACK TO SELECT</div>
         </div>
-        
-        <div class="camera-group">
-            <button id="openCameraBtn" class="camera-btn">📸 OPEN CAMERA</button>
-            <button id="uploadImageBtn" class="upload-btn">🖼️ UPLOAD PHOTO</button>
-            <input type="file" id="fileInput" accept="image/*" capture="environment">
+
+        <div class="preview-container">
             <div class="image-preview" id="imagePreview">
-                <span style="font-size: 10px; color:#999;">NO PHOTO</span>
+                <span style="font-size: 10px; color:#999;">no photo</span>
             </div>
+            <div class="preview-label">photo (optional)</div>
         </div>
-        
-        <button id="addItemBtn" class="add-btn">+ ADD ITEM</button>
+
+        <div class="camera-section">
+            <button id="openCameraBtn" class="btn-camera">📸 open camera</button>
+            <button id="uploadImageBtn" class="btn-upload">🖼️ upload</button>
+            <input type="file" id="fileInput" accept="image/*">
+        </div>
+
+        <button id="addItemBtn" class="btn-add">+ add item</button>
     </div>
 
     <!-- Items Display -->
-    <div class="items-section">
-        <div class="section-title">📋 CURRENT STOCK LIST</div>
-        <div id="compactList" class="compact-list">
-            <div style="color:#999; text-align:center; padding:12px;">NO ITEMS ADDED YET</div>
+    <div class="items-list">
+        <div class="section-title">📋 stock list</div>
+        <div id="compactList">
+            <div class="empty-state">no items added</div>
         </div>
         
-        <div class="section-title" style="margin-top: 16px;">🖼️ ITEMS WITH PHOTOS (APP ONLY)</div>
-        <div id="detailList" class="detail-list">
-            <div style="color:#999; text-align:center; padding:12px;">NO ITEMS WITH PHOTOS</div>
+        <div class="section-title" style="margin-top: 16px;">🖼️ with photos</div>
+        <div id="detailList">
+            <div class="empty-state">no photos</div>
         </div>
     </div>
 
     <!-- Action Buttons -->
-    <button id="submitBtn" class="submit-btn">📤 SEND TO WHATSAPP</button>
-    <button id="clearAllBtn" class="clear-btn">🗑️ CLEAR ALL ITEMS</button>
-    <div id="statusMsg" class="status hidden"></div>
-    <div class="note">
-        📱 WHATSAPP: ITEM | QTY | GROUP (ALL CAPS)<br>
-        📸 CAMERA OR UPLOAD PHOTO - BOTH WORK!<br>
-        💡 ON MOBILE: CAMERA OPENS IN A MODAL WINDOW
+    <div class="action-buttons">
+        <button id="submitBtn" class="btn-whatsapp">📤 whatsapp</button>
+        <button id="clearAllBtn" class="btn-clear">🗑️ clear</button>
     </div>
+    <div id="statusMsg" class="status hidden"></div>
 </div>
 
 <script>
-    // Store items array
+    // All predefined groups (lowercase for matching)
+    const allGroups = [
+        "BEATS PLZO", "BEATS SUIT", "BOTTOM WORK", "CATALOGUE SUIT", "COTTON", 
+        "COTTON DUPATTA", "COTTON SUIT", "CRUNCHY SUIT", "DUPATTA", "FARSHI", 
+        "FARSI", "FIRDOS SUIT", "FLUTE PLAZO", "FROCK", "GARARA", "GENERAL", 
+        "GENTS", "GOWN", "KAPDA", "LACHA", "MAKHNA", "NAYRA", "ORGANZA PLAZO", 
+        "ORGANZA SUIT", "ORGANZA TROUSER", "PAK SUIT", "PAPLON", "PLAZO", 
+        "READYMADE", "RUSSIAN PLAZO", "SHADED PLAZO", "SHARARA", "SS", "SUIT", 
+        "TROUSER", "VELVET SUIT"
+    ];
+
     let items = [];
     let currentImageData = null;
-    let useCustomGroup = false;
     let currentStream = null;
+    let selectedGroup = "GENERAL";
 
     // DOM elements
     const itemNameInput = document.getElementById('itemName');
     const qtyInput = document.getElementById('qty');
-    const groupSelect = document.getElementById('groupSelect');
-    const customGroupInput = document.getElementById('customGroup');
+    const groupSearch = document.getElementById('groupSearch');
+    const groupSuggestions = document.getElementById('groupSuggestions');
     const imagePreviewDiv = document.getElementById('imagePreview');
     const addItemBtn = document.getElementById('addItemBtn');
     const submitBtn = document.getElementById('submitBtn');
@@ -465,10 +516,6 @@
     const compactListDiv = document.getElementById('compactList');
     const detailListDiv = document.getElementById('detailList');
     const statusMsg = document.getElementById('statusMsg');
-    const toggleCustomGroup = document.getElementById('toggleCustomGroup');
-    const customGroupDiv = document.getElementById('customGroupDiv');
-    const backToSelect = document.getElementById('backToSelect');
-    const groupSelectDiv = document.getElementById('groupSelectDiv');
     
     // Camera elements
     const cameraModal = document.getElementById('cameraModal');
@@ -479,63 +526,139 @@
     const uploadImageBtn = document.getElementById('uploadImageBtn');
     const fileInput = document.getElementById('fileInput');
 
-    // Toggle between predefined and custom group
-    toggleCustomGroup.addEventListener('click', () => {
-        groupSelectDiv.style.display = 'none';
-        customGroupDiv.style.display = 'block';
-        useCustomGroup = true;
-        customGroupInput.focus();
-    });
-
-    backToSelect.addEventListener('click', () => {
-        groupSelectDiv.style.display = 'block';
-        customGroupDiv.style.display = 'none';
-        useCustomGroup = false;
-        customGroupInput.value = '';
-    });
-
-    // Convert to uppercase function
-    function toUpper(str) {
-        return String(str).toUpperCase().trim();
+    // Compress image function
+    function compressImage(base64, maxWidth = 800, quality = 0.7) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                
+                if (width > maxWidth) {
+                    height = (height * maxWidth) / width;
+                    width = maxWidth;
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                const compressed = canvas.toDataURL('image/jpeg', quality);
+                resolve(compressed);
+            };
+            img.src = base64;
+        });
     }
+
+    // Group search function - shows close matches
+    function searchGroups(query) {
+        if (!query || query.length === 0) {
+            return [];
+        }
+        
+        const queryUpper = query.toUpperCase();
+        
+        // Score each group by relevance
+        const scored = allGroups.map(group => {
+            let score = 0;
+            if (group === queryUpper) score = 100;
+            else if (group.startsWith(queryUpper)) score = 80;
+            else if (group.includes(queryUpper)) score = 60;
+            else if (group.split(' ').some(word => word.startsWith(queryUpper))) score = 40;
+            
+            // Levenshtein-like similarity for typos
+            if (score === 0 && queryUpper.length > 2) {
+                const similarity = calculateSimilarity(group, queryUpper);
+                if (similarity > 0.5) score = 30 * similarity;
+            }
+            
+            return { group, score };
+        });
+        
+        return scored.filter(s => s.score > 0).sort((a,b) => b.score - a.score).slice(0, 6).map(s => s.group);
+    }
+    
+    // Simple similarity for typo tolerance
+    function calculateSimilarity(str1, str2) {
+        const longer = str1.length > str2.length ? str1 : str2;
+        const shorter = str1.length > str2.length ? str2 : str1;
+        if (longer.length === 0) return 1.0;
+        
+        let matches = 0;
+        for (let i = 0; i < shorter.length; i++) {
+            if (longer[i] && shorter[i] === longer[i]) matches++;
+        }
+        return matches / longer.length;
+    }
+    
+    // Show group suggestions
+    function updateSuggestions() {
+        const query = groupSearch.value;
+        const suggestions = searchGroups(query);
+        
+        if (suggestions.length > 0 && query.length > 0) {
+            groupSuggestions.innerHTML = suggestions.map(g => 
+                `<div class="suggestion-item" onclick="selectGroup('${g.replace(/'/g, "\\'")}')">${g}</div>`
+            ).join('');
+            groupSuggestions.classList.add('show');
+        } else {
+            groupSuggestions.classList.remove('show');
+        }
+    }
+    
+    // Select a group from suggestions
+    window.selectGroup = function(group) {
+        groupSearch.value = group;
+        selectedGroup = group;
+        groupSuggestions.classList.remove('show');
+    };
+    
+    // Handle group input
+    groupSearch.addEventListener('input', () => {
+        updateSuggestions();
+        selectedGroup = groupSearch.value.toUpperCase() || "GENERAL";
+    });
+    
+    groupSearch.addEventListener('blur', () => {
+        setTimeout(() => groupSuggestions.classList.remove('show'), 200);
+        if (!groupSearch.value) {
+            groupSearch.value = "GENERAL";
+            selectedGroup = "GENERAL";
+        } else {
+            selectedGroup = groupSearch.value.toUpperCase();
+        }
+    });
 
     // Open Camera
     async function openCamera() {
         try {
-            // Stop any existing stream
             if (currentStream) {
                 currentStream.getTracks().forEach(track => track.stop());
             }
             
-            const constraints = {
-                video: {
-                    facingMode: { exact: "environment" }  // Use back camera on mobile
-                }
-            };
-            
             try {
-                currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+                currentStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: { exact: "environment" } }
+                });
             } catch (err) {
-                // Fallback to any camera if back camera fails
                 currentStream = await navigator.mediaDevices.getUserMedia({ video: true });
             }
             
             cameraVideo.srcObject = currentStream;
             cameraModal.classList.add('active');
-            showStatus('CAMERA OPENED - CLICK CAPTURE', 'success');
+            showStatus('camera ready - tap capture', 'success');
         } catch (err) {
-            console.error('Camera error:', err);
-            showStatus('CANNOT ACCESS CAMERA. USE UPLOAD PHOTO INSTEAD.', 'error');
-            
-            // Try file upload as fallback
+            showStatus('camera access failed - use upload', 'error');
             fileInput.click();
         }
     }
 
-    // Capture Photo from Camera
-    function capturePhoto() {
-        if (!cameraVideo.videoWidth || !cameraVideo.videoHeight) {
-            showStatus('PLEASE WAIT, CAMERA IS LOADING...', 'error');
+    // Capture and compress photo
+    async function capturePhoto() {
+        if (!cameraVideo.videoWidth) {
+            showStatus('waiting for camera...', 'error');
             return;
         }
         
@@ -545,15 +668,16 @@
         const context = canvas.getContext('2d');
         context.drawImage(cameraVideo, 0, 0, canvas.width, canvas.height);
         
-        currentImageData = canvas.toDataURL('image/jpeg', 0.8);
+        const rawImage = canvas.toDataURL('image/jpeg', 1.0);
+        const compressedImage = await compressImage(rawImage, 800, 0.7);
+        
+        currentImageData = compressedImage;
         imagePreviewDiv.innerHTML = `<img src="${currentImageData}" style="width:100%; height:100%; object-fit:cover;">`;
         
-        // Close camera modal
         closeCamera();
-        showStatus('PHOTO CAPTURED!', 'success');
+        showStatus(`photo captured & compressed (${Math.round(compressedImage.length/1024)}kb)`, 'success');
     }
 
-    // Close Camera Modal
     function closeCamera() {
         cameraModal.classList.remove('active');
         if (currentStream) {
@@ -563,190 +687,143 @@
         cameraVideo.srcObject = null;
     }
 
-    // Upload Image from File
-    function uploadImage() {
+    // Upload and compress image
+    async function uploadImage() {
         fileInput.click();
     }
-
-    // Handle file selection
-    function handleFileSelect(event) {
+    
+    async function handleFileSelect(event) {
         const file = event.target.files[0];
         if (!file) return;
         
         const reader = new FileReader();
-        reader.onload = function(e) {
-            currentImageData = e.target.result;
+        reader.onload = async function(e) {
+            const compressed = await compressImage(e.target.result, 800, 0.7);
+            currentImageData = compressed;
             imagePreviewDiv.innerHTML = `<img src="${currentImageData}" style="width:100%; height:100%; object-fit:cover;">`;
-            showStatus('PHOTO UPLOADED!', 'success');
+            showStatus(`photo uploaded & compressed (${Math.round(compressed.length/1024)}kb)`, 'success');
         };
         reader.readAsDataURL(file);
-        
-        // Reset file input so same file can be selected again
         fileInput.value = '';
-    }
-
-    // Get current group (uppercase)
-    function getCurrentGroup() {
-        if (useCustomGroup) {
-            return toUpper(customGroupInput.value) || 'GENERAL';
-        } else {
-            return groupSelect.value;
-        }
     }
 
     // Add item
     function addItem() {
-        let name = toUpper(itemNameInput.value);
+        let name = itemNameInput.value.trim().toUpperCase();
         const qty = parseInt(qtyInput.value);
-        let group = getCurrentGroup();
+        let group = selectedGroup || "GENERAL";
         
         if (!name) {
-            showStatus('PLEASE ENTER ITEM NAME', 'error');
+            showStatus('enter item name', 'error');
             return;
         }
         
         if (isNaN(qty) || qty <= 0) {
-            showStatus('PLEASE ENTER VALID QUANTITY', 'error');
+            showStatus('enter valid quantity', 'error');
             return;
-        }
-        
-        if (!group || group === '') {
-            group = 'GENERAL';
         }
         
         const newItem = {
             id: Date.now(),
             name: name,
             qty: qty,
-            group: group,
+            group: group.toUpperCase(),
             image: currentImageData || null,
         };
         
         items.push(newItem);
         renderLists();
         
-        // Clear form
         itemNameInput.value = '';
         qtyInput.value = '4';
         currentImageData = null;
-        imagePreviewDiv.innerHTML = '<span style="font-size:10px; color:#999;">NO PHOTO</span>';
-        
-        if (useCustomGroup) {
-            customGroupInput.value = '';
-        }
-        
+        imagePreviewDiv.innerHTML = '<span style="font-size: 10px; color:#999;">no photo</span>';
         itemNameInput.focus();
         
-        showStatus(`ADDED: ${name} | ${qty} | ${group}`, 'success');
+        showStatus(`✓ ${name} | ${qty} | ${group}`, 'success');
     }
     
-    // Remove item
     function removeItem(id) {
         items = items.filter(item => item.id !== id);
         renderLists();
-        showStatus('ITEM REMOVED', 'success');
+        showStatus('item removed', 'success');
     }
     
-    // Render both lists
     function renderLists() {
         if (items.length === 0) {
-            compactListDiv.innerHTML = '<div style="color:#999; text-align:center; padding:12px;">NO ITEMS ADDED YET</div>';
-            detailListDiv.innerHTML = '<div style="color:#999; text-align:center; padding:12px;">NO ITEMS WITH PHOTOS</div>';
+            compactListDiv.innerHTML = '<div class="empty-state">no items added</div>';
+            detailListDiv.innerHTML = '<div class="empty-state">no photos</div>';
             return;
         }
         
         let compactHtml = '';
         items.forEach((item, idx) => {
-            compactHtml += `<div class="compact-item">${idx+1}. ${item.name} | ${item.group} | QTY: ${item.qty}</div>`;
-        });
-        compactListDiv.innerHTML = compactHtml;
-        
-        let detailHtml = '';
-        items.forEach(item => {
-            const hasPhoto = item.image && item.image !== null;
-            detailHtml += `
-                <div class="detail-card">
-                    ${hasPhoto ? `<img class="detail-img" src="${item.image}" alt="product">` : `<div class="detail-img" style="display:flex; align-items:center; justify-content:center; font-size:24px;">📷</div>`}
-                    <div class="detail-info">
-                        <strong>${item.name}</strong> - QTY: ${item.qty}
-                        <p>GROUP: ${item.group}</p>
-                    </div>
-                    <button class="remove-btn" onclick="removeItem(${item.id})">✖</button>
+            compactHtml += `
+                <div class="stock-item">
+                    <span><span class="item-name">${item.name}</span> <span class="item-details">| ${item.group} | ${item.qty}pcs</span></span>
+                    <button class="remove-icon" onclick="removeItem(${item.id})">✕</button>
                 </div>
             `;
         });
-        detailListDiv.innerHTML = detailHtml;
+        compactListDiv.innerHTML = compactHtml;
+        
+        const itemsWithPhotos = items.filter(i => i.image);
+        if (itemsWithPhotos.length === 0) {
+            detailListDiv.innerHTML = '<div class="empty-state">no photos</div>';
+        } else {
+            let detailHtml = '<div class="photo-items">';
+            itemsWithPhotos.forEach(item => {
+                detailHtml += `
+                    <div class="photo-card">
+                        <img class="photo-card-img" src="${item.image}" alt="product">
+                        <div class="photo-card-info">
+                            <strong>${item.name}</strong>
+                            <p>${item.group} | QTY: ${item.qty}</p>
+                        </div>
+                        <button class="remove-icon" onclick="removeItem(${item.id})">✕</button>
+                    </div>
+                `;
+            });
+            detailHtml += '</div>';
+            detailListDiv.innerHTML = detailHtml;
+        }
     }
     
-    // Format message for WhatsApp
     function formatWhatsAppMessage() {
-        if (items.length === 0) {
-            return null;
-        }
+        if (items.length === 0) return null;
         
         let message = "📦 *STOCK REPORT* 📦\n\n";
-        
         items.forEach((item, idx) => {
             message += `${idx+1}. ${item.name} | ${item.qty} | ${item.group}\n`;
         });
-        
         message += `\n━━━━━━━━━━━━━━━━━━━━━\n`;
-        message += `TOTAL ITEMS: ${items.length} | TOTAL QTY: ${items.reduce((sum, i) => sum + i.qty, 0)}\n`;
-        message += `SENT FROM STOCK MANAGER APP`;
-        
+        message += `TOTAL: ${items.length} items | ${items.reduce((sum, i) => sum + i.qty, 0)} pcs`;
         return message;
     }
     
-    // Send to WhatsApp
     function sendToWhatsApp() {
         const message = formatWhatsAppMessage();
         if (!message) {
-            showStatus('NO ITEMS TO SEND! ADD SOME ITEMS FIRST.', 'error');
-            return false;
-        }
-        
-        const encodedMessage = encodeURIComponent(message);
-        const phoneNumber = "7588756668";
-        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-        
-        window.open(whatsappUrl, '_blank');
-        return true;
-    }
-    
-    function sendToGroup() {
-        const message = formatWhatsAppMessage();
-        if (!message) {
-            showStatus('NO ITEMS TO SEND!', 'error');
+            showStatus('no items to send', 'error');
             return;
         }
         
         const encodedMessage = encodeURIComponent(message);
-        const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
-        window.open(whatsappUrl, '_blank');
-        showStatus('OPENED WHATSAPP - PLEASE SELECT YOUR GROUP', 'success');
-    }
-    
-    function handleSubmit() {
-        if (items.length === 0) {
-            showStatus('PLEASE ADD AT LEAST ONE ITEM FIRST', 'error');
-            return;
-        }
-        
-        sendToWhatsApp();
-        showStatus('OPENING WHATSAPP TO SEND REPORT TO 7588756668...', 'success');
+        window.open(`https://wa.me/7588756668?text=${encodedMessage}`, '_blank');
+        showStatus('opening whatsapp...', 'success');
         
         setTimeout(() => {
-            if (confirm('ALSO WANT TO SEND TO A WHATSAPP GROUP?')) {
-                sendToGroup();
+            if (confirm('also send to group?')) {
+                window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
             }
         }, 500);
     }
     
     function clearAll() {
-        if (items.length > 0 && confirm('DELETE ALL ITEMS?')) {
+        if (items.length > 0 && confirm('delete all items?')) {
             items = [];
             renderLists();
-            showStatus('ALL ITEMS CLEARED', 'success');
+            showStatus('all cleared', 'success');
         }
     }
     
@@ -754,14 +831,12 @@
         statusMsg.textContent = msg;
         statusMsg.className = `status ${type}`;
         statusMsg.classList.remove('hidden');
-        setTimeout(() => {
-            statusMsg.classList.add('hidden');
-        }, 3000);
+        setTimeout(() => statusMsg.classList.add('hidden'), 2500);
     }
     
     // Event listeners
     addItemBtn.addEventListener('click', addItem);
-    submitBtn.addEventListener('click', handleSubmit);
+    submitBtn.addEventListener('click', sendToWhatsApp);
     clearAllBtn.addEventListener('click', clearAll);
     openCameraBtn.addEventListener('click', openCamera);
     capturePhotoBtn.addEventListener('click', capturePhoto);
@@ -769,28 +844,25 @@
     uploadImageBtn.addEventListener('click', uploadImage);
     fileInput.addEventListener('change', handleFileSelect);
     
-    // Enter key
     itemNameInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') addItem();
     });
     qtyInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') addItem();
     });
-    customGroupInput.addEventListener('keypress', (e) => {
+    groupSearch.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') addItem();
     });
     
-    // Auto uppercase
     itemNameInput.addEventListener('input', function() {
         this.value = this.value.toUpperCase();
     });
-    customGroupInput.addEventListener('input', function() {
+    groupSearch.addEventListener('input', function() {
         this.value = this.value.toUpperCase();
     });
     
-    // Set default quantity
     qtyInput.value = '4';
-    
+    groupSearch.value = "GENERAL";
     renderLists();
 </script>
 </body>
