@@ -486,14 +486,11 @@
 </div>
 
 <script>
-    // ============ GITHUB CONFIGURATION (YOUR SETUP) ============
-    const GITHUB_USERNAME = "srfashoinned";  // IMPORTANT: Change this to your GitHub username!
-    const GITHUB_REPO = "image-storage";              // Keep this as "image-storage"
+    // ============ GITHUB CONFIGURATION ============
+    const GITHUB_USERNAME = "srfashoinned";           // Your GitHub username
+    const GITHUB_REPO = "image-storage-psd";          // Your image storage repository name
     const GITHUB_TOKEN = "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";  // Your token
-    // ============================================================
-    
-    // IMPORTANT: Change YOUR_GITHUB_USERNAME above to your actual GitHub username!
-    // Example: if your GitHub is "john123", then GITHUB_USERNAME = "john123"
+    // ===============================================
     
     const GITHUB_BRANCH = "main";
     const CDN_BASE = `https://cdn.jsdelivr.net/gh/${GITHUB_USERNAME}/${GITHUB_REPO}`;
@@ -542,7 +539,7 @@
         const finalFileName = `${timestamp}_${randomString}_${fileName}`;
         const filePath = `images/${finalFileName}`;
         
-        showStatus('uploading to cloud...', 'uploading');
+        showStatus('☁️ uploading to cloud...', 'uploading');
         
         try {
             let sha = null;
@@ -575,17 +572,16 @@
             });
             
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Upload failed');
+                throw new Error('Upload failed');
             }
             
             const cdnUrl = `${CDN_BASE}@${GITHUB_BRANCH}/${filePath}`;
-            showStatus('✓ image uploaded to cloud!', 'success');
+            showStatus('✅ image uploaded to cloud!', 'success');
             return cdnUrl;
             
         } catch (error) {
             console.error('Upload error:', error);
-            showStatus('upload failed: ' + error.message, 'error');
+            showStatus('⚠️ upload failed, saving locally', 'error');
             return null;
         }
     }
@@ -680,16 +676,16 @@
             }
             cameraVideo.srcObject = currentStream;
             cameraModal.classList.add('active');
-            showStatus('camera ready - tap capture', 'success');
+            showStatus('📷 camera ready - tap capture', 'success');
         } catch (err) {
-            showStatus('camera access failed - use upload', 'error');
+            showStatus('❌ camera access failed - use upload', 'error');
             fileInput.click();
         }
     }
 
     async function capturePhoto() {
         if (!cameraVideo.videoWidth) {
-            showStatus('waiting for camera...', 'error');
+            showStatus('⏳ waiting for camera...', 'error');
             return;
         }
         
@@ -757,12 +753,12 @@
         let group = selectedGroup || "GENERAL";
         
         if (!name) {
-            showStatus('enter item name', 'error');
+            showStatus('⚠️ enter item name', 'error');
             return;
         }
         
         if (isNaN(qty) || qty <= 0) {
-            showStatus('enter valid quantity', 'error');
+            showStatus('⚠️ enter valid quantity', 'error');
             return;
         }
         
@@ -789,7 +785,7 @@
     function removeItem(id) {
         items = items.filter(item => item.id !== id);
         renderLists();
-        showStatus('item removed', 'success');
+        showStatus('🗑️ item removed', 'success');
     }
     
     function renderLists() {
@@ -851,7 +847,7 @@
         }
         const encodedMessage = encodeURIComponent(message);
         window.open(`https://wa.me/7588756668?text=${encodedMessage}`, '_blank');
-        showStatus('opening whatsapp...', 'success');
+        showStatus('📤 opening whatsapp...', 'success');
         setTimeout(() => {
             if (confirm('also send to group?')) {
                 window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
@@ -863,7 +859,7 @@
         if (items.length > 0 && confirm('delete all items?')) {
             items = [];
             renderLists();
-            showStatus('all cleared', 'success');
+            showStatus('🗑️ all cleared', 'success');
         }
     }
     
@@ -904,11 +900,6 @@
     qtyInput.value = '4';
     groupSearch.value = "GENERAL";
     renderLists();
-    
-    // Check if GitHub username is set
-    if (GITHUB_USERNAME === "srfashoinned") {
-        showStatus('⚠️ Please set your GitHub username in the code!', 'error');
-    }
 </script>
 </body>
 </html>
